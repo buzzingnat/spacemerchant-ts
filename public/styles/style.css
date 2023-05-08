@@ -1,0 +1,394 @@
+/*COLORS!!!
+ *  BLUE:   #8ab7e1, cornflowerblue;
+ *  DKBLUE: #191970, midnightblue;
+ *  RED:    #eb626d, lightcoral;
+ *  ORANGE: #fcaa6b, sandybrown;
+ *  XLTGRAY: #f5f5f5, whitesmoke;
+ *  LTGRAY: #bbb, silver;
+ *  DKGRAY: #888, gray;
+ *  XDKGRAY: #222, black;
+*/
+/*basic font setup: serif for main text, sans-serif for headers*/
+p, body, div, span, button {font-family: 'Josefin Sans', sans-serif; font-size: 18px;}
+h1, h2, h3, h4, h5, h6, .tab, .barLabel {font-family: 'Josefin Slab', serif;}
+
+.pagebody {
+    background-color: white;
+    font-family: Adobe Garamond Pro, Georgia, serif;
+    font-size: initial;
+    color: #222;
+    margin: 0;
+}
+.mainGame {
+    position: relative;
+    margin: -20px auto 0 auto;
+    width: 800px;
+    height: 600px;
+}
+.header {
+    width: 800px;
+    height: 50px;
+    margin: 0 auto;
+}
+.header h1 {
+    position: relative;
+    display: inline-block;
+    width: 350px;
+    margin: 5px;
+    padding: 0;
+}
+/* --
+Graph Button Container styling.
+-- */
+.graphLink {
+    float: right;
+    margin: 15px auto;
+}
+/* end Footnotes styling */
+.left, .center, .right {
+    position: relative;
+    box-sizing: border-box;
+    background-color: transparent;
+    height: 600px;
+    border: thin #888 solid; /*DKGRAY*/
+}
+.left{
+    float: left;
+    margin-top: -600px;
+    width: 6%;
+    display: none;
+}
+.center{
+    /* -- for when the left column is visible --
+    margin: 20px auto auto 7%;
+    width: 26%;
+    */
+    margin: 20px auto auto 0;
+    width: 30%;
+    border: none;
+    font-size: 14px;
+}
+.js-scrollBox {
+    top: 0;
+    position: relative;
+}
+.right{
+    float: right;
+    margin: -600px auto auto auto;
+    /* -- for when the left column is visible --
+    width: 66%;
+    */
+    width: 69%;
+}
+.arrow-up {
+    width: 0;
+    height: 0;
+    border-left: 17px solid transparent;
+    border-right: 17px solid transparent;
+    border-bottom: 20px solid silver; /*LTGRAY*/
+    position: relative;
+    margin: 8px auto;
+}
+.arrow-up:hover {
+  border-bottom-color: gray; /*DKGRAY*/
+}
+.arrow-down {
+    width: 0;
+    height: 0;
+    border-left: 17px solid transparent;
+    border-right: 17px solid transparent;
+    border-top: 20px solid #bbb; /*LTGRAY*/
+    position: relative;
+    margin: 8px auto;
+}
+.arrow-down:hover {
+  border-top-color: gray; /*DKGRAY*/
+}
+.arrowWrapper {
+    height: auto;
+    width: 40px;
+    position: absolute;
+    border: thin solid #888;
+    display: block;
+    margin: 8px 0;
+    right: 15px;
+    top: 0;
+}
+.arrowWrapper + .arrow-down {
+    top: 50px;
+}
+
+/* --
+Tab menu styling
+-- */
+ul {list-style: none; padding: 0; margin: 0; position: relative; top: -1px;}
+/* The Menu */
+.tab {
+    position: relative;
+    top: 1px;
+    height: 25px;
+    box-sizing: border-box;
+    display: inline-block;
+    margin: 0px 0px 0px 0;
+    padding: 2px 6px;
+    border: thin solid #bbb; /*LTGRAY*/
+    border-bottom: none;
+    border-top-right-radius: 10px;
+    font-size: 20px;
+    font-weight: bold;
+    color: #fff; /*WHITE*/
+    background-color: #888; /*DKGRAY*/
+    cursor: pointer;
+}
+.tab:hover {
+    background-color: #bbb; /*LTGRAY*/
+    color: #000; /*BLACK*/
+    border: thin solid #888; /*DKGRAY*/
+    border-bottom: none;
+}
+.tab.selected {
+    background-color: #fff; /*WHITE*/
+    color: #000; /*BLACK*/
+    margin-bottom: -1px;
+    border: 1px solid #888; /*DKGRAY*/
+    border-bottom: 1px #fff solid; /*WHITE*/
+}
+/* The Content */
+.tabContent {
+    height: 575px;
+    width: 100%;
+    display: none;
+    font-size: 1.1em;
+    background: white;
+    box-sizing: border-box;
+    padding: .5em;
+    border: 1px #888 solid; /*DKGRAY*/
+}
+.tabContent.selected {
+    display: block;
+}
+/* end Tab menu styling */
+
+/* --
+Measure Bar Styling - for stats
+-- */
+.barWrapper {
+    width: 80%;
+    margin: 7px auto;
+}
+.barLabel {
+    position: relative;
+    display: inline-block;
+    font-size: 16px;
+    bottom: -1px;
+    padding: 2px 4px;
+    border-left: 1px solid #888; /*DKGRAY*/
+    border-top: 1px solid #888; /*DKGRAY*/
+}
+.bar {
+    font-family: Maple, Verdana, sans-serif;
+    text-align: right;
+    font-size: 12px;
+    background-color: red;
+    height: 16px;
+    box-sizing: border-box;
+}
+/* end Measure Bar Styling */
+
+/* --
+Tab Content Styling - Accordion, taken from (http://www.w3schools.com/howto/howto_js_accordion.asp)
+-- */
+/* Style the buttons that are used to open and close the accordion panel */
+button.accordion {
+    background-color: #eee;
+    color: #444;
+    cursor: pointer;
+    padding: 6px;
+    font-size: 14px;
+    font-weight: bold;
+    width: 100%;
+    text-align: left;
+    border: none;
+    outline: none;
+    transition: 0.4s;
+}
+/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
+button.accordion.active, button.accordion:hover {
+    background-color: #ddd;
+}
+/* Style the accordion panel. Hidden by default */
+.accordionWrapper div.panel {
+    padding: 0 18px;
+    background-color: white;
+    display: none;
+}
+/* The "show" class is added to the accordion panel when the user clicks on one of the buttons. This will show the panel content */
+.accordionWrapper div.panel.show {
+    display: block !important;
+}
+.tabContent2{
+  overflow-y: scroll;
+}
+/*end Tab Content Styling - Lists*/
+
+/* --
+SVG Icon Styling
+-- */
+svg {
+    width: 100%;
+    height: 100%;
+}
+svg.hidden {
+    display: none;
+}
+svg path {
+  fill: inherit;
+}
+.iconInner{fill: inherit; /*inherit, so color changes when mouse is over wrapper*/}
+.icon {
+    margin: 8px auto;
+    display: inline-block;
+    position: relative;
+    height: 100%;
+    width: 100%;
+    font-size: 10px;
+    font-family: sans-serif, Sans;
+}
+.iconWrapper{
+    margin-right: auto;
+    margin-left: auto;
+    height: 30px;
+    width: 30px;
+    margin-top: 4px;
+    margin-bottom: 24px;
+    z-index: -1;
+    cursor: pointer;
+}
+.iconWrapper:hover {fill: sandybrown; /*ORANGE*/}
+.iconWrapper:active {fill: lightcoral; /*RED*/}
+.iconWrapper{fill: #fff; /*WHITE*/}
+.iconWrapper:before {
+    content: "";
+    background-color: #888; /*DKGRAY*/
+    width: 50px;
+    height: 50px;
+    border-radius: 100%;
+    position: absolute;
+    display: block;
+    margin-left: -10px;
+}
+/*end SVG Icon Styling*/
+
+/* --
+Story Box Styling
+-- */
+.storyContentWrapper {
+    margin: 2px auto;
+    width: 24em;
+}
+.storyContentWrapper p, .storyContentWrapper ul, .storyContentWrapper p span {font-size: 16px;}
+.storyContentWrapper ul {
+  list-style: square inside url("../gfx/simple-arrow.png");
+}
+.storyEventSubheading {margin: .5em 0;}
+.port {margin: 1em 0 .25em 0;}
+.storyContentWrapper li {
+  margin: .1em .5em;
+  font-size: 14px;
+}
+.js-storyBox.right {
+    overflow-y: scroll;
+    overflow-x: auto;
+}
+h3.eventTitle {
+  margin: .75em 0;
+  font-size: 22px;
+}
+.choicesWrapper {
+    width: 22em;
+    margin: auto;
+}
+.choice {
+    margin: 20px auto;
+    color: whitesmoke; /*XLTGRAY*/
+    text-shadow: #222 1px 1px; /*XDKGRAY*/
+    padding: 8px;
+    border-radius: 5px;
+    background-color: midnightblue; /*DKBLUE*/
+    /*
+    text-shadow: cornflowerblue 1px 1px;
+    */
+    cursor: pointer;
+}
+.choice:hover{
+  background-color: sandybrown; /*ORANGE*/
+  /*
+  text-shadow: sandybrown 1px 1px;
+  */}
+.choice:active{
+  background-color: lightcoral; /*RED*/
+  /*
+  text-shadow: lightcoral 1px 1px;
+  */}
+.choice.notValid {
+  cursor: default;
+  background-color: silver; /*LTGRAY*/
+  color: #222; /*XDKGRAY*/
+  text-shadow: none;
+}
+/* end Story Box Styling */
+
+
+/* --
+All link styles
+-- */
+a:link {
+  color: midnightblue; /*DKBLUE*/
+  text-decoration: none;
+  font-weight: 800;
+}
+a:visited {
+  color: lightcoral; /*RED*/
+}
+a:link:active, a:visited:active, a:link:hover, a:visited:hover {
+  color: sandybrown; /*ORANGE*/
+}
+/* end All Link styling */
+
+/* --
+Graph Iframe Styling
+-- */
+iframe {
+    width: 800px;
+    height: 600px;
+    border: none;
+}
+.iframeWrapper {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50px;
+    margin: auto;
+    width: 800px;
+    height: 600px;
+    border: thin gray solid;
+    box-sizing: border-box;
+    visibility: hidden;
+}
+/* end Graph Iframe Styling */
+
+/* --
+Footer Styling
+-- */
+.footer {
+    position: relative;
+    width: 800px;
+    height: 30px;
+    margin: 0 auto;
+    top: 10px;
+}
+.footer h3 {
+    padding: 0;
+    margin: 5px 0;
+}
+/* end Footer Styling */

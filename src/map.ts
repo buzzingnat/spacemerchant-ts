@@ -1,0 +1,42 @@
+export const map = [
+    { id: 'excelsior',
+        'title': 'Beta Thymine, Excelsior Station',
+        'connects': ['haliax'],
+        'description': 'A tiny backwater, avoid here if possible. Hard to reach, exciting to leave.',
+        'items': [
+            {name: 'food', quantity: 15,},
+            {name: 'medicine', quantity: 24},
+            {name: 'luxury', quantity: 6},
+        ],
+    },
+    {id: 'haliax',
+        'title': 'Ganymede Prime, Haliax Station',
+        'connects': ['excelsior','europa'],
+        'description': 'A place, things happen here.',
+        'items': [
+            {name: 'food', quantity: 5,},
+            {name: 'medicine', quantity: 14},
+            {name: 'luxury', quantity: 22},
+        ],
+    },
+    {id: 'europa',
+        'title': 'Echidna 4317, Europa Station',
+        'connects': ['haliax','drone'],
+        'description': 'Beautiful, elegant, expensive.',
+        'items': [
+            {name: 'food', quantity: 23,},
+            {name: 'medicine', quantity: 9},
+            {name: 'luxury', quantity: 21},
+        ],
+    },
+    {id: 'drone',
+        'title': 'Eldrazi Minor, Drone Station',
+        'connects': ['europa'],
+        'description': 'Scary monsters dwell on this station\'s neighboring planet.',
+        'items': [
+            {name: 'food', quantity: 11,},
+            {name: 'medicine', quantity: 7},
+            {name: 'luxury', quantity: 10},
+        ],
+    }
+]
