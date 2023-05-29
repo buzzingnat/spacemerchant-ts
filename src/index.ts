@@ -30,6 +30,15 @@ const playerState: types.PlayerState = {
 /* end PLAYER STATE */
 
 /**
+ *GLOBAL OBJECTS
+ **/
+// @ts-ignore
+window.storyEvents = events;
+// @ts-ignore
+window.playerState = playerState;
+/* end GLOBAL OBJECTS */
+
+/**
  *GLOBAL DOM ELEMENTS
  **/
 const jsDom: {[key: string]: HTMLElement} | undefined = {};
@@ -40,21 +49,44 @@ function getMainGameElem() {
     }
     const mainGameElem: HTMLDivElement = document.querySelector('.mainGame')!;
     if (!mainGameElem) {
-        throw new Error('Could not find mainGame element');
+        throw new Error('Could not find mainGameElem');
     }
     jsDom.mainGameElem = mainGameElem;
     return mainGameElem;
 }
-// function getIframeWrapperElem() {
-//     if (!document) {
-//         return;
-//     }
-//     const iframeWrapperElem: HTMLDivElement = document.querySelector('.iframeWrapper')!;
-//     if (!iframeWrapperElem) {
-//         throw new Error('Could not find iframeWrapper element');
-//     }
-//     return iframeWrapperElem;
-// }
+function getIframeWrapperElem() {
+    if (!document) {
+        return;
+    }
+    const iframeWrapperElem: HTMLDivElement = document.querySelector('.iframeWrapper')!;
+    if (!iframeWrapperElem) {
+        throw new Error('Could not find iframeWrapperElem');
+    }
+    jsDom.iframeWrapperElem = iframeWrapperElem;
+    return iframeWrapperElem;
+}
+function getShowGraphButtonElem() {
+    if (!document) {
+        return;
+    }
+    const showGraphButtonElem: HTMLButtonElement = document.querySelector('#showGraph')!;
+    if (!showGraphButtonElem) {
+        throw new Error('Could not find showGraphButtonElem');
+    }
+    jsDom.showGraphButtonElem = showGraphButtonElem;
+    return showGraphButtonElem;
+}
+function getHideGraphButtonElem() {
+    if (!document) {
+        return;
+    }
+    const hideGraphButtonElem: HTMLButtonElement = document.querySelector('#hideGraph')!;
+    if (!hideGraphButtonElem) {
+        throw new Error('Could not find getHideGraphButtonElem');
+    }
+    jsDom.hideGraphButtonElem = hideGraphButtonElem;
+    return hideGraphButtonElem;
+}
 
 function makeStatsTab(selected: boolean, jsDom: {[key: string]: HTMLElement}): {[key: string]: HTMLElement} {
     // content for tab1
@@ -148,7 +180,11 @@ if (typeof window !== "object") {
     console.log('this is not a browser, the DOM is not available');
 } else {
     const mainGameElem = getMainGameElem()!;
-    // const iframeWrapperElem = getIframeWrapperElem()!;
+    getIframeWrapperElem();
+    const showGraphButtonElem = getShowGraphButtonElem()!;
+    showGraphButtonElem.addEventListener('click', showGraph);
+    const hideGraphButtonElem = getHideGraphButtonElem()!;
+    hideGraphButtonElem.addEventListener('click', hideGraph);
     const statsBoxElem: HTMLElement = tag('div', 'js-statsBox js-tabbedArea center');
     const controlBoxElem: HTMLElement = tag('div', 'js-controlBox left');
     const storyBoxElem: HTMLElement = tag('div', 'js-storyBox right');
@@ -258,24 +294,20 @@ function initGame(playerState: types.PlayerState, scrollBoxElem: HTMLElement, fi
 /**
  *TOGGLE EVENT GRAPH VISIBILITY
  **/
-// function showGraph() {
-//     if (!document) {
-//         return;
-//     }
-//     const mainGameElem = getMainGameElem()!;
-//     const iframeWrapperElem = getIframeWrapperElem()!;
-//     mainGameElem.style.display = 'none';
-//     iframeWrapperElem.style.visibility = 'visible';
-// }
-// function hideGraph() {
-//     if (!document) {
-//         return;
-//     }
-//     const mainGameElem = getMainGameElem()!;
-//     const iframeWrapperElem = getIframeWrapperElem()!;
-//     mainGameElem.style.display = 'block';
-//     iframeWrapperElem.style.visibility = 'hidden';
-// }
+function showGraph() {
+    if (!document) {
+        return;
+    }
+    jsDom.mainGameElem.style.display = 'none';
+    jsDom.iframeWrapperElem.style.visibility = 'visible';
+}
+function hideGraph() {
+    if (!document) {
+        return;
+    }
+    jsDom.mainGameElem.style.display = 'block';
+    jsDom.iframeWrapperElem.style.visibility = 'hidden';
+}
 /* end TOGGLE EVENT GRAPH VISIBILITY */
 
 function makeMeasureBar(className: string, label: string, primaryColor: string, secondaryColor: string){
