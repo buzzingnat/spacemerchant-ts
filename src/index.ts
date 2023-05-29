@@ -32,6 +32,8 @@ const playerState: types.PlayerState = {
 /**
  *GLOBAL DOM ELEMENTS
  **/
+const jsDom: {[key: string]: HTMLElement} | undefined = {};
+
 function getMainGameElem() {
     if (!document) {
         return;
@@ -40,6 +42,7 @@ function getMainGameElem() {
     if (!mainGameElem) {
         throw new Error('Could not find mainGame element');
     }
+    jsDom.mainGameElem = mainGameElem;
     return mainGameElem;
 }
 // function getIframeWrapperElem() {
@@ -53,43 +56,47 @@ function getMainGameElem() {
 //     return iframeWrapperElem;
 // }
 
-function makeStatsTab(selected: boolean): {[key: string]: HTMLElement} {
+function makeStatsTab(selected: boolean, jsDom: {[key: string]: HTMLElement}): {[key: string]: HTMLElement} {
     // content for tab1
     const explainText1 = 'Base stats like strength, speed, and intellect. Maybe some sort of points or game progress, as well.';
     const strengthBarElem = makeMeasureBar('strength', 'strength',COL_RED,COL_DKGRAY);
-    const tabContent1Elem = tag('div', `js-tabContent tabContent tabContent1 ${selected ? 'selected' : ''}`);
-    tabContent1Elem.appendChild(tag('p', explainText1));
-    tabContent1Elem.appendChild(strengthBarElem);
-    return {tabContent1Elem, strengthBarElem};
+    const tabContentElem = tag('div', `js-tabContent tabContent tabContent1 ${selected ? 'selected' : ''}`);
+    tabContentElem.appendChild(tag('p', explainText1));
+    tabContentElem.appendChild(strengthBarElem);
+    jsDom.strengthBarElem = strengthBarElem;
+    jsDom.statsTabContentElem = tabContentElem;
+    return {tabContentElem, strengthBarElem};
 }
 
-function makeMapTab(selected: boolean): {[key: string]: HTMLElement} {
+function makeMapTab(selected: boolean, jsDom: {[key: string]: HTMLElement}): {[key: string]: HTMLElement} {
     // content for tab 2
     const accordionWrapperElem: HTMLElement = tag('div', 'accordionWrapper');
-    const tabContent2Elem = tag('div', `js-tabContent tabContent tabContent2 ${selected ? 'selected' : ''}`);
+    const tabContentElem = tag('div', `js-tabContent tabContent tabContent2 ${selected ? 'selected' : ''}`);
     for(let i = 0; i < map.length; i++) {
         displayAccordionLocation(map[i], accordionWrapperElem);
     }
-    tabContent2Elem.appendChild(accordionWrapperElem);
-    return {tabContent2Elem};
+    tabContentElem.appendChild(accordionWrapperElem);
+    jsDom.mapTabContentElem = tabContentElem;
+    return {tabContentElem};
 }
 
-function makeItemTab(selected: boolean): {[key: string]: HTMLElement}  {
+function makeItemTab(selected: boolean, jsDom: {[key: string]: HTMLElement}): {[key: string]: HTMLElement}  {
 // content for tab3
     const explainText3 = 'Your items!';
     const coinsElem = tag('div', 'coins', 'Coins: ' + playerState.coins);
     const cargoBarElem = makeMeasureBar('cargo', 'cargo', COL_BLUE, COL_DKGRAY);
-    const tabContent3Elem = tag('div', `js-tabContent tabContent tabContent3 ${selected ? 'selected' : ''}`);
-    tabContent3Elem.appendChild(tag('p', '', explainText3));
-    tabContent3Elem.appendChild(coinsElem);
-    tabContent3Elem.appendChild(cargoBarElem);
+    const tabContentElem = tag('div', `js-tabContent tabContent tabContent3 ${selected ? 'selected' : ''}`);
+    tabContentElem.appendChild(tag('p', '', explainText3));
+    tabContentElem.appendChild(coinsElem);
+    tabContentElem.appendChild(cargoBarElem);
     // build CREW INFO section
-    const crewWrapperElem = tag('ul', 'crewWrapper');
+    const crewWrapperElem = tag('div', 'crewWrapper');
     const crewTitleElem = tag('h3', 'crewTitle', 'Crew');
     crewWrapperElem.appendChild(crewTitleElem);
+    const crewInnerWrapperElem = tag('ul', 'crewInnerWrapper');
     const crewList = [];
     if (playerState.crew.length < 1) {
-        crewWrapperElem.appendChild(tag('li', 'crew', 'No crew hired on this ship!'));
+        crewInnerWrapperElem.appendChild(tag('li', 'crew', 'No crew hired on this ship!'));
     } else {
         for(let i = 0; i < playerState.crew.length; i++) {
             const crew = playerState.crew[i];
@@ -100,12 +107,41 @@ function makeItemTab(selected: boolean): {[key: string]: HTMLElement}  {
                 `${crew.salary} and bonus of ${JSON.stringify(crew.bonus)}.`
             );
             crewList.push(crew);
-            crewWrapperElem.appendChild(crewElem);
+            crewInnerWrapperElem.appendChild(crewElem);
         }
     }
-    tabContent3Elem.appendChild(crewWrapperElem);
+    crewWrapperElem.appendChild(crewInnerWrapperElem);
+    tabContentElem.appendChild(crewWrapperElem);
     // end CREW INFO SECTION
-    return {coinsElem, cargoBarElem, tabContent3Elem, crewWrapperElem, crewTitleElem};
+    jsDom.coinsElem = coinsElem;
+    jsDom.cargoBarElem = cargoBarElem;
+    jsDom.itemTabContentElem = tabContentElem;
+    jsDom.crewWrapperElem = crewWrapperElem;
+    jsDom.crewInnerWrapperElem = crewInnerWrapperElem;
+    jsDom.crewTitleElem = crewTitleElem;
+    return {coinsElem, cargoBarElem, tabContentElem, crewWrapperElem, crewInnerWrapperElem, crewTitleElem};
+}
+function updateCoinsElem(coinsElem: HTMLElement, playerState: types.PlayerState): void {
+    coinsElem.innerText = `Coins: ${playerState.coins}`;
+}
+function updateCrewList(crewInnerWrapperElem: HTMLElement, playerState: types.PlayerState): void {
+    crewInnerWrapperElem.innerHTML = '';
+    const crewList = [];
+    if (playerState.crew.length < 1) {
+        crewInnerWrapperElem.appendChild(tag('li', 'crew', 'No crew hired on this ship!'));
+    } else {
+        for(let i = 0; i < playerState.crew.length; i++) {
+            const crew = playerState.crew[i];
+            const crewElem = tag(
+                'li',
+                'crew',
+                `${crew.jobTitle} named ${crew.name} with a salary of ` +
+                `${crew.salary} and bonus of ${JSON.stringify(crew.bonus)}.`
+            );
+            crewList.push(crew);
+            crewInnerWrapperElem.appendChild(crewElem);
+        }
+    }
 }
 
 if (typeof window !== "object") {
@@ -127,17 +163,22 @@ if (typeof window !== "object") {
     controlBoxElem.appendChild(buildIcon('settings'));
     controlBoxElem.appendChild(buildIcon('person'));
 
-    const tabsElem = tag('ul', 'js-tabs');
+    const tabsElem: HTMLElement = tag('ul', 'js-tabs');
+    jsDom.tabsElem = tabsElem;
 
-    statsBoxElem.appendChild(tabsElem);
     // add three tab heads, 3rd starts selected
     tabsElem.appendChild(tag('li', 'js-tab tab tab1', 'Stats'));
     tabsElem.appendChild(tag('li', 'js-tab tab tab2', 'Map'));
     tabsElem.appendChild(tag('li', 'js-tab tab tab3', 'Items'));
     // add three tab bodies, 3rd starts selected and visible
-    tabsElem.appendChild(makeStatsTab(false));
-    tabsElem.appendChild(makeMapTab(false));
-    tabsElem.appendChild(makeItemTab(true));
+    makeStatsTab(false, jsDom);
+    makeMapTab(false, jsDom);
+    makeItemTab(true, jsDom);
+    // add them to tab element
+    tabsElem.appendChild(jsDom.statsTabContentElem);
+    tabsElem.appendChild(jsDom.mapTabContentElem);
+    tabsElem.appendChild(jsDom.itemTabContentElem);
+    statsBoxElem.appendChild(tabsElem);
 
     const tabsElemAsArray = Array.from(tabsElem.getElementsByClassName('js-tab'));
     const tabsContentElemAsArray = Array.from(tabsElem.getElementsByClassName('js-tabContent'));
@@ -165,25 +206,27 @@ if (typeof window !== "object") {
 
     //create scroll buttons that hover in the top right corner
     const arrowWrapperElem = tag('div', 'arrowWrapper');
-    const arrowUpElem = tag('div', 'arrowUp');
-    const arrowDownElem = tag('div', 'arrowDown');
+    const arrowUpElem = tag('div', 'arrow-up');
+    const arrowDownElem = tag('div', 'arrow-down');
     arrowWrapperElem.appendChild(arrowUpElem);
     arrowWrapperElem.appendChild(arrowDownElem);
     mainGameElem.appendChild(arrowWrapperElem);
     clickAndHold(() => scrollUpStory(storyBoxElem), arrowUpElem);
     clickAndHold(() => scrollDownStory(storyBoxElem), arrowDownElem);
 
-    const jsDom = {
-        mainGameElem, statsBoxElem,
-        controlBoxElem, storyBoxElem,
-        scrollBoxElem, arrowWrapperElem,
-        arrowUpElem, arrowDownElem};
+    jsDom.statsBoxElem = statsBoxElem;
+    jsDom.controlBoxElem = controlBoxElem;
+    jsDom.storyBoxElem = storyBoxElem;
+    jsDom.scrollBoxElem = scrollBoxElem;
+    jsDom.arrowWrapperElem = arrowWrapperElem;
+    jsDom.arrowUpElem = arrowUpElem;
+    jsDom.arrowDownElem = arrowDownElem;
 
     //CALL THE FUNCTION displayEvent AND USE IT TO CREATE THE FIRST EVENT ON THE SCREEN
     window.onload = () => {
         let limit = 100;
         const checkForCoinElem = () => setTimeout(() => {
-            const coinsElem = document.getElementsByClassName('coins')[0];
+            const coinsElem = jsDom.coinsElem;
             if (!coinsElem && limit > 0) {
                 limit--;
                 checkForCoinElem();
@@ -204,11 +247,11 @@ if (typeof window !== "object") {
 
 function initGame(playerState: types.PlayerState, scrollBoxElem: HTMLElement, firstEvent: types.StoryEvent) {
     displayEvent(
-        scrollBoxElem,
         firstEvent,
-        playerState
+        playerState,
+        jsDom
     );
-    updateMeasureBar('cargo', calculateCargo(playerState), playerState.cargo.holdMax);
+    updateMeasureBar(jsDom.cargoBarElem, calculateCargo(playerState), playerState.cargo.holdMax);
 }
 /* end DOM ELEMENTS */
 
@@ -320,11 +363,11 @@ function clickAndHold(actionToTake: () => void, elementClicked: HTMLElement): vo
 
 //MAKE AN EVENT APPEAR ON THE SCREEN
 function displayEvent(
-    scrollBoxElem: HTMLElement,
     storyEvent: types.StoryEvent,
-    playerState: types.PlayerState
+    playerState: types.PlayerState,
+    jsDom: {[key: string]: HTMLElement}
     ) {
-    const coinsElem = document.getElementsByClassName('coins')[0] as HTMLElement;
+    const scrollBoxElem = jsDom.scrollBoxElem;
     scrollBoxElem.innerHTML = '';
     const eventWrapperElem: HTMLElement = tag('div', 'storyContentWrapper');
     eventWrapperElem.dataset.storyEvent = 'storyEvent', JSON.stringify(storyEvent);
@@ -367,7 +410,7 @@ function displayEvent(
             }
             if (choice.hasOwnProperty('performAction') && choice.performAction !== undefined) {
                 choice.performAction(playerState);
-                if (playerState.updateUI) {
+                /*if (playerState.updateUI) {
                     const tabsElem = document.getElementsByClassName('js-tabs')[0];
                     const tabsContent = Array.from(document.getElementsByClassName('js-tabContent'));
                     const selectedTabIndex = tabsContent.findIndex(elem => elem.classList.contains('selected'));
@@ -377,28 +420,29 @@ function displayEvent(
                     tabsContent[0].remove();
                     // create content tabs with the active tab correctly selected
                     if (selectedTabIndex === 0) {
-                        tabsElem.appendChild(makeStatsTab(true));
-                        tabsElem.appendChild(makeMapTab(false));
-                        tabsElem.appendChild(makeItemTab(false));
+                        tabsElem.appendChild(makeStatsTab(true).tabContentElem);
+                        tabsElem.appendChild(makeMapTab(false).tabContentElem);
+                        tabsElem.appendChild(makeItemTab(false).tabContentElem);
                     }
                     if (selectedTabIndex === 1) {
-                        tabsElem.appendChild(makeStatsTab(false));
-                        tabsElem.appendChild(makeMapTab(true));
-                        tabsElem.appendChild(makeItemTab(false));
+                        tabsElem.appendChild(makeStatsTab(false).tabContentElem);
+                        tabsElem.appendChild(makeMapTab(true).tabContentElem);
+                        tabsElem.appendChild(makeItemTab(false).tabContentElem);
                     }
                     if (selectedTabIndex === 2) {
-                        tabsElem.appendChild(makeStatsTab(false));
-                        tabsElem.appendChild(makeMapTab(false));
-                        tabsElem.appendChild(makeItemTab(true));
+                        tabsElem.appendChild(makeStatsTab(false).tabContentElem);
+                        tabsElem.appendChild(makeMapTab(false).tabContentElem);
+                        tabsElem.appendChild(makeItemTab(true).tabContentElem);
                     }
                     // set updateUI to false after all updates finished
                     playerState.updateUI = false;
-                }
-                updateMeasureBar('cargo', calculateCargo(playerState), playerState.cargo.holdMax);
-                coinsElem.innerText = playerState.coins.toString();
+                }*/
+                updateMeasureBar(jsDom.cargoBarElem, calculateCargo(playerState), playerState.cargo.holdMax);
+                updateCoinsElem(jsDom.coinsElem, playerState);
+                updateCrewList(jsDom.crewInnerWrapperElem, playerState);
             }
             const nextEvent = events.find(obj => obj.id === choice.next) as types.StoryEvent;
-            displayEvent(scrollBoxElem, nextEvent, playerState);
+            displayEvent(nextEvent, playerState, jsDom);
         });
         choicesWrapperElem.appendChild(choiceElem);
     }
