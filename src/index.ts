@@ -91,13 +91,15 @@ function getHideGraphButtonElem() {
 function makeStatsTab(selected: boolean, jsDom: {[key: string]: HTMLElement}): {[key: string]: HTMLElement} {
     // content for tab1
     const explainText1 = 'Base stats like strength, speed, and intellect. Maybe some sort of points or game progress, as well.';
-    const strengthBarElem = makeMeasureBar('strength', 'strength',COL_RED,COL_DKGRAY);
+    const strengthBarCollection = makeMeasureBar('strength', 'strength', COL_RED, COL_DKGRAY);
     const tabContentElem = tag('div', `js-tabContent tabContent tabContent1 ${selected ? 'selected' : ''}`);
     tabContentElem.appendChild(tag('p', explainText1));
-    tabContentElem.appendChild(strengthBarElem);
-    jsDom.strengthBarElem = strengthBarElem;
+    tabContentElem.appendChild(strengthBarCollection.barWrapper);
+    jsDom.strengthBarElem = strengthBarCollection.bar;
+    jsDom.strengthBarLabelElem = strengthBarCollection.barLabel;
+    jsDom.strengthBarWrapperElem = strengthBarCollection.barWrapper;
     jsDom.statsTabContentElem = tabContentElem;
-    return {tabContentElem, strengthBarElem};
+    return {tabContentElem, strengthBarElem: strengthBarCollection.bar};
 }
 
 function makeMapTab(selected: boolean, jsDom: {[key: string]: HTMLElement}): {[key: string]: HTMLElement} {
@@ -116,11 +118,14 @@ function makeItemTab(selected: boolean, jsDom: {[key: string]: HTMLElement}): {[
 // content for tab3
     const explainText3 = 'Your items!';
     const coinsElem = tag('div', 'coins', 'Coins: ' + playerState.coins);
-    const cargoBarElem = makeMeasureBar('cargo', 'cargo', COL_BLUE, COL_DKGRAY);
+    const cargoBarCollection = makeMeasureBar('cargo', 'cargo', COL_BLUE, COL_DKGRAY);
+    const cargoBarWrapper = cargoBarCollection.barWrapper;
+    const cargoBar = cargoBarCollection.bar;
+    const cargoBarLabel = cargoBarCollection.barLabel;
     const tabContentElem = tag('div', `js-tabContent tabContent tabContent3 ${selected ? 'selected' : ''}`);
     tabContentElem.appendChild(tag('p', '', explainText3));
     tabContentElem.appendChild(coinsElem);
-    tabContentElem.appendChild(cargoBarElem);
+    tabContentElem.appendChild(cargoBarCollection.barWrapper);
     // build CREW INFO section
     const crewWrapperElem = tag('div', 'crewWrapper');
     const crewTitleElem = tag('h3', 'crewTitle', 'Crew');
@@ -146,12 +151,14 @@ function makeItemTab(selected: boolean, jsDom: {[key: string]: HTMLElement}): {[
     tabContentElem.appendChild(crewWrapperElem);
     // end CREW INFO SECTION
     jsDom.coinsElem = coinsElem;
-    jsDom.cargoBarElem = cargoBarElem;
+    jsDom.cargoBarElem = cargoBar;
+    jsDom.cargoBarWrapperElem = cargoBarWrapper;
+    jsDom.cargoBarLabelElem = cargoBarLabel;
     jsDom.itemTabContentElem = tabContentElem;
     jsDom.crewWrapperElem = crewWrapperElem;
     jsDom.crewInnerWrapperElem = crewInnerWrapperElem;
     jsDom.crewTitleElem = crewTitleElem;
-    return {coinsElem, cargoBarElem, tabContentElem, crewWrapperElem, crewInnerWrapperElem, crewTitleElem};
+    return {coinsElem, tabContentElem, crewWrapperElem, crewInnerWrapperElem, crewTitleElem};
 }
 function updateCoinsElem(coinsElem: HTMLElement, playerState: types.PlayerState): void {
     coinsElem.innerText = `Coins: ${playerState.coins}`;
@@ -317,7 +324,7 @@ function makeMeasureBar(className: string, label: string, primaryColor: string, 
     bar.setAttribute('style', `width:auto;border-right: 0px solid ${secondaryColor};background-color:${primaryColor}`);
     barWrapper.appendChild(barLabel);
     barWrapper.appendChild(bar);
-    return barWrapper;
+    return {barWrapper, bar, barLabel};
 }
 function updateMeasureBar(bar: HTMLElement, currentValue: number, maxValue: number){
     if (!bar) {
@@ -442,33 +449,6 @@ function displayEvent(
             }
             if (choice.hasOwnProperty('performAction') && choice.performAction !== undefined) {
                 choice.performAction(playerState);
-                /*if (playerState.updateUI) {
-                    const tabsElem = document.getElementsByClassName('js-tabs')[0];
-                    const tabsContent = Array.from(document.getElementsByClassName('js-tabContent'));
-                    const selectedTabIndex = tabsContent.findIndex(elem => elem.classList.contains('selected'));
-                    // get rid of the three content tabs, keep the title tabs
-                    tabsContent[2].remove();
-                    tabsContent[1].remove();
-                    tabsContent[0].remove();
-                    // create content tabs with the active tab correctly selected
-                    if (selectedTabIndex === 0) {
-                        tabsElem.appendChild(makeStatsTab(true).tabContentElem);
-                        tabsElem.appendChild(makeMapTab(false).tabContentElem);
-                        tabsElem.appendChild(makeItemTab(false).tabContentElem);
-                    }
-                    if (selectedTabIndex === 1) {
-                        tabsElem.appendChild(makeStatsTab(false).tabContentElem);
-                        tabsElem.appendChild(makeMapTab(true).tabContentElem);
-                        tabsElem.appendChild(makeItemTab(false).tabContentElem);
-                    }
-                    if (selectedTabIndex === 2) {
-                        tabsElem.appendChild(makeStatsTab(false).tabContentElem);
-                        tabsElem.appendChild(makeMapTab(false).tabContentElem);
-                        tabsElem.appendChild(makeItemTab(true).tabContentElem);
-                    }
-                    // set updateUI to false after all updates finished
-                    playerState.updateUI = false;
-                }*/
                 updateMeasureBar(jsDom.cargoBarElem, calculateCargo(playerState), playerState.cargo.holdMax);
                 updateCoinsElem(jsDom.coinsElem, playerState);
                 updateCrewList(jsDom.crewInnerWrapperElem, playerState);

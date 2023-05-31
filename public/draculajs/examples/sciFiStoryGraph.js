@@ -55,28 +55,30 @@ function displayGraph() {
 	return set;
     };
     $.each(events, function(eventKey, event){
-    	console.log('runs while using events', {eventKey, event});
+    	// console.log('runs while using events', {eventKey, event});
     	for (var i = 0; i < event.choices.length; i++){
     	    var next = event.choices[i].next;
             var eventId = event.id;
     	    if (next) {
-        		g.addNode(eventId, {render:renderFirst});
-        		g.addNode(next, {render:renderGeneric});
+        		g.addNode(eventId, {render: renderFirst});
+        		g.addNode(next, {render: renderGeneric});
         		g.addEdge(eventId, next, {directed:true});
     	    }
     	}
     });
     for (var eventId in g.nodes) {
     	var hasNext = false;
+        var graphEvent = g.nodes[eventId];
+        var storyEvent = events.find(e => e.id === eventId);
     	// Style events that do not exist at all.
-    	if (!events[eventId]) {
-    	    g.nodes[eventId].render = renderNoExist;
+    	if (!storyEvent) {
+    	    graphEvent.render = renderNoExist;
     	    continue;
     	}
     	// Find and style events that have no next event among its choices.
-    	var event = events[eventId];
-    	for (var i = 0; i < event.choices.length; i++){
-    	    if (event.choices[i].next) {
+    	for (var i = 0; i < storyEvent.choices.length; i++){
+            console.log();
+    	    if (storyEvent.choices[i].next) {
         		hasNext = true;
         		break;
     	    }
