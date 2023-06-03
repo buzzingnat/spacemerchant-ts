@@ -1,5 +1,5 @@
 import * as types from './types';
-import { tag, buildIcon, calculateCargo } from './utils';
+import { tag, buildIcon, calculateHoldMax } from './utils';
 import { events } from './events';
 import { map } from './map';
 
@@ -13,19 +13,15 @@ const COL_DKGRAY = 'gray';
  *PLAYER STATE
  **/
 const playerState: types.PlayerState = {
-  'coins': 100000,
-  'cargo': {
-    'holdMax': 10,
-    'shipSupplies': 0,
-    'tradeLuxury': 0,
-    'tradeMedicine': 0,
-    'tradeFood': 0
-  },
-  'ship': '',
-  'passengers': [],
-  'crew': [],
-  'costChoice': 0,
-  'updateUI': false,
+  coins: 100000,
+  cargo: [],
+  shipStats: {holdMax: 0, health: 0, speed: 0},
+  totalStats: {holdMax: 0, health: 0, speed: 0},
+  ship: '',
+  passengers: [],
+  crew: [],
+  costChoice: 0,
+  updateUI: false,
 };
 /* end PLAYER STATE */
 
@@ -98,8 +94,9 @@ function makeStatsTab(selected: boolean, jsDom: {[key: string]: HTMLElement}): {
     jsDom.strengthBarElem = strengthBarCollection.bar;
     jsDom.strengthBarLabelElem = strengthBarCollection.barLabel;
     jsDom.strengthBarWrapperElem = strengthBarCollection.barWrapper;
+    jsDom.strengthBarNumElem = strengthBarCollection.barNum;
     jsDom.statsTabContentElem = tabContentElem;
-    return {tabContentElem, strengthBarElem: strengthBarCollection.bar};
+    return {tabContentElem};
 }
 
 function makeMapTab(selected: boolean, jsDom: {[key: string]: HTMLElement}): {[key: string]: HTMLElement} {
@@ -122,6 +119,7 @@ function makeItemTab(selected: boolean, jsDom: {[key: string]: HTMLElement}): {[
     const cargoBarWrapper = cargoBarCollection.barWrapper;
     const cargoBar = cargoBarCollection.bar;
     const cargoBarLabel = cargoBarCollection.barLabel;
+    const cargoBarNum = cargoBarCollection.barNum;
     const tabContentElem = tag('div', `js-tabContent tabContent tabContent3 ${selected ? 'selected' : ''}`);
     tabContentElem.appendChild(tag('p', '', explainText3));
     tabContentElem.appendChild(coinsElem);
@@ -131,22 +129,7 @@ function makeItemTab(selected: boolean, jsDom: {[key: string]: HTMLElement}): {[
     const crewTitleElem = tag('h3', 'crewTitle', 'Crew');
     crewWrapperElem.appendChild(crewTitleElem);
     const crewInnerWrapperElem = tag('ul', 'crewInnerWrapper');
-    const crewList = [];
-    if (playerState.crew.length < 1) {
-        crewInnerWrapperElem.appendChild(tag('li', 'crew', 'No crew hired on this ship!'));
-    } else {
-        for(let i = 0; i < playerState.crew.length; i++) {
-            const crew = playerState.crew[i];
-            const crewElem = tag(
-                'li',
-                'crew',
-                `${crew.jobTitle} named ${crew.name} with a salary of ` +
-                `${crew.salary} and bonus of ${JSON.stringify(crew.bonus)}.`
-            );
-            crewList.push(crew);
-            crewInnerWrapperElem.appendChild(crewElem);
-        }
-    }
+    updateCrewList(crewInnerWrapperElem, playerState);
     crewWrapperElem.appendChild(crewInnerWrapperElem);
     tabContentElem.appendChild(crewWrapperElem);
     // end CREW INFO SECTION
@@ -154,6 +137,7 @@ function makeItemTab(selected: boolean, jsDom: {[key: string]: HTMLElement}): {[
     jsDom.cargoBarElem = cargoBar;
     jsDom.cargoBarWrapperElem = cargoBarWrapper;
     jsDom.cargoBarLabelElem = cargoBarLabel;
+    jsDom.cargoBarNumElem = cargoBarNum;
     jsDom.itemTabContentElem = tabContentElem;
     jsDom.crewWrapperElem = crewWrapperElem;
     jsDom.crewInnerWrapperElem = crewInnerWrapperElem;
@@ -174,8 +158,8 @@ function updateCrewList(crewInnerWrapperElem: HTMLElement, playerState: types.Pl
             const crewElem = tag(
                 'li',
                 'crew',
-                `${crew.jobTitle} named ${crew.name} with a salary of ` +
-                `${crew.salary} and bonus of ${JSON.stringify(crew.bonus)}.`
+                `${crew.jobTitle}: ${crew.name}, \$${crew.salary}/port\n` +
+                `${JSON.stringify(crew.bonus)}.`
             );
             crewList.push(crew);
             crewInnerWrapperElem.appendChild(crewElem);
@@ -294,7 +278,12 @@ function initGame(playerState: types.PlayerState, scrollBoxElem: HTMLElement, fi
         playerState,
         jsDom
     );
-    updateMeasureBar(jsDom.cargoBarElem, calculateCargo(playerState), playerState.cargo.holdMax);
+    updateMeasureBar(
+        jsDom.cargoBarElem,
+        jsDom.cargoBarNumElem,
+        playerState.cargo.length,
+        calculateHoldMax(playerState)
+    );
 }
 /* end DOM ELEMENTS */
 
@@ -318,21 +307,26 @@ function hideGraph() {
 /* end TOGGLE EVENT GRAPH VISIBILITY */
 
 function makeMeasureBar(className: string, label: string, primaryColor: string, secondaryColor: string){
-    const barWrapper = tag('div', 'barWrapper');
+    const barWrapper = tag('div', `barWrapper ${className}-bar`);
     const barLabel = tag('span', 'barLabel', label);
-    const bar = tag('div', `bar ${className}-bar`);
-    bar.setAttribute('style', `width:auto;border-right: 0px solid ${secondaryColor};background-color:${primaryColor}`);
+    const barNum = tag('span', 'barNum');
+    const bar = tag('div', `bar`);
+    bar.setAttribute('style', `box-sizing:content-box;width:auto;border-left: 0px solid ${primaryColor};background-color:${secondaryColor}`);
     barWrapper.appendChild(barLabel);
+    bar.appendChild(barNum);
     barWrapper.appendChild(bar);
-    return {barWrapper, bar, barLabel};
+    return {barWrapper, bar, barLabel, barNum};
 }
-function updateMeasureBar(bar: HTMLElement, currentValue: number, maxValue: number){
+function updateMeasureBar(bar: HTMLElement, barNum: HTMLElement, currentValue: number, maxValue: number){
     if (!bar) {
         return console.log('bar element not found');
     }
-    const width = bar.clientWidth;
-    bar.style.borderRightWidth = Math.round((1-(currentValue/maxValue))*width)+'px';
-    bar.innerText = currentValue + '/' + maxValue;
+    const barWidth = bar.offsetWidth;
+    const borderWidth = Math.round((currentValue/maxValue)*barWidth);
+    console.log({barWidth, borderWidth});
+    bar.style.background = COL_DKGRAY;
+    bar.style.borderLeftWidth = borderWidth+'px';
+    barNum.innerText = currentValue + '/' + maxValue;
 }
 
 /**
@@ -449,7 +443,12 @@ function displayEvent(
             }
             if (choice.hasOwnProperty('performAction') && choice.performAction !== undefined) {
                 choice.performAction(playerState);
-                updateMeasureBar(jsDom.cargoBarElem, calculateCargo(playerState), playerState.cargo.holdMax);
+                updateMeasureBar(
+                    jsDom.cargoBarElem,
+                    jsDom.cargoBarNumElem,
+                    playerState.cargo.length,
+                    calculateHoldMax(playerState)
+                );
                 updateCoinsElem(jsDom.coinsElem, playerState);
                 updateCrewList(jsDom.crewInnerWrapperElem, playerState);
             }

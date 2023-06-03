@@ -24,14 +24,20 @@ export interface Location {
     items: {name: string; quantity: number;}[];
 }
 
+export type Cargo = 'luxury' | 'food' | 'medicine' | 'shipSupplies';
+
 export interface PlayerState {
     coins: number;
-    cargo: {
+    cargo: Cargo[],
+    shipStats: {
         holdMax: number;
-        shipSupplies: number;
-        tradeLuxury: number;
-        tradeMedicine: number;
-        tradeFood: number;
+        speed: number;
+        health: number;
+    },
+    totalStats: {
+        holdMax: number;
+        speed: number;
+        health: number;
     },
     ship: string;
     passengers: Passenger[];

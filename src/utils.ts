@@ -34,7 +34,54 @@ export function buildIcon(iconName: string): HTMLDivElement {
 }
 
 //get a number of total items held in "cargo" to use for buying and carrying trade goods, etc.
-export function calculateCargo(playerState: types.PlayerState): number {
-    const c = playerState.cargo;
-    return (c.shipSupplies+c.tradeFood+c.tradeLuxury+c.tradeMedicine);
+export function calculateHoldMax(playerState: types.PlayerState): number {
+    let value = 0;
+    value += playerState.shipStats.holdMax;
+    for (const person of playerState.crew) {
+        value += person.bonus.holdMax;
+    }
+    return value;
+}
+
+export function makeSellEvent(nextId: string, cost: number, playerState: types.PlayerState, itemType: types.Cargo) {
+    return {
+                next: nextId,
+                cost,
+                getText: function (playerState: types.PlayerState, itemType: types.Cargo) {
+                    return 'Buy "High Density Foodstuffs" at '+ cost +
+                        ' coins per unit. (Currently own '
+                        + playerState.cargo.filter(s => s === itemType).length + ' units.)';
+                },
+                isActionValid: function (p: types.PlayerState): boolean {
+                    const hasEnoughMoney: () => boolean = () => p.coins >= cost;
+                    const hasEnoughCargoSpace: () => boolean = () => p.cargo.length < calculateHoldMax(p);
+                    return (hasEnoughMoney() && hasEnoughCargoSpace());
+                },
+                performAction: function (playerState: types.PlayerState) {
+                    playerState.coins -= cost;
+                    playerState.cargo.push(itemType);
+                }
+            };
+}
+
+export function makeBuyEvent(nextId: string, cost: number, playerState: types.PlayerState, itemType: types.Cargo) {
+    return {
+                next: 'marketExcelsior',
+                cost: 15,
+                getText: function (playerState: types.PlayerState, itemType: types.Cargo) {
+                    return 'Sell "High Density Foodstuffs" at '+ cost +
+                        ' coins per unit. (Currently own ' + playerState.cargo.filter(s => s === itemType).length
+                        + ' units.)';
+                },
+                isActionValid: function (playerState: types.PlayerState, itemType: types.Cargo) {
+                    return playerState.cargo.filter(s => s === itemType).length > 0;
+                },
+                performAction: function (playerState: types.PlayerState, itemType: types.Cargo) {
+                    const index = playerState.cargo.indexOf(itemType);
+                    playerState.coins += this.cost;
+                    if (index > -1) {
+                        playerState.cargo.splice(index, 1);
+                    }
+                }
+            };
 }

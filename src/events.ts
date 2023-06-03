@@ -1,5 +1,5 @@
 import * as types from './types';
-import { calculateCargo } from './utils';
+import { calculateHoldMax } from './utils';
 
 export const events = [
     {
@@ -434,7 +434,7 @@ export const events = [
                 },
                 isActionValid: function (p: types.PlayerState): boolean {
                     const hasEnoughMoney: () => boolean = () => p.coins >= this.cost;
-                    const hasEnoughCargoSpace: () => boolean = () => calculateCargo(p) < p.cargo.holdMax;
+                    const hasEnoughCargoSpace: () => boolean = () => p.cargo.length < calculateHoldMax(p);
                     return (hasEnoughMoney() && hasEnoughCargoSpace());
                 },
                 performAction: function (playerState: types.PlayerState) {
