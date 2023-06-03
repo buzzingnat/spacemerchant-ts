@@ -43,7 +43,21 @@ export function calculateHoldMax(playerState: types.PlayerState): number {
     return value;
 }
 
-export function makeSellEvent(nextId: string, cost: number, playerState: types.PlayerState, itemType: types.Cargo) {
+export function hasEnoughMoney(playerState.coins: number, cost: number): boolean {
+    return playerState.coins >= cost;
+}
+
+export function hasEnoughCargoSpace(
+    playerState: types.PlayerState,
+    calculateHoldMax: (playerState: types.PlayerState) => number
+): boolean {
+    return playerState.cargo.length < calculateHoldMax(playerState);
+}
+
+export function makeSellEvent(
+    nextId: string, cost: number,
+    playerState: types.PlayerState, itemType: types.Cargo,
+    hasEnoughMoney: (playerState: types.PlayerState, cost: number) => boolean) {
     return {
                 next: nextId,
                 cost,
@@ -52,10 +66,15 @@ export function makeSellEvent(nextId: string, cost: number, playerState: types.P
                         ' coins per unit. (Currently own '
                         + playerState.cargo.filter(s => s === itemType).length + ' units.)';
                 },
-                isActionValid: function (p: types.PlayerState): boolean {
-                    const hasEnoughMoney: () => boolean = () => p.coins >= cost;
-                    const hasEnoughCargoSpace: () => boolean = () => p.cargo.length < calculateHoldMax(p);
-                    return (hasEnoughMoney() && hasEnoughCargoSpace());
+                isActionValid: function (
+                    p: types.PlayerState,
+                    hasEnoughMoney: (playerState: types.PlayerState, cost: number) => boolean,
+                    hasEnoughCargoSpace: (
+                        playerState: types.PlayerState,
+                        calculateHoldMax: (playerState: types.PlayerState) => number
+                    ) => boolean
+                ): boolean {
+                    return (hasEnoughMoney(p, cost) && hasEnoughCargoSpace(p, calculateHoldMax(p)));
                 },
                 performAction: function (playerState: types.PlayerState) {
                     playerState.coins -= cost;
@@ -70,7 +89,8 @@ export function makeBuyEvent(nextId: string, cost: number, playerState: types.Pl
                 cost: 15,
                 getText: function (playerState: types.PlayerState, itemType: types.Cargo) {
                     return 'Sell "High Density Foodstuffs" at '+ cost +
-                        ' coins per unit. (Currently own ' + playerState.cargo.filter(s => s === itemType).length
+                        ' coins per unit. (Currently own '
+                        + playerState.cargo.filter(s => s === itemType).length
                         + ' units.)';
                 },
                 isActionValid: function (playerState: types.PlayerState, itemType: types.Cargo) {
