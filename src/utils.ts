@@ -43,7 +43,7 @@ export function calculateHoldMax(playerState: types.PlayerState): number {
     return value;
 }
 
-export function hasEnoughMoney(playerState.coins: number, cost: number): boolean {
+export function hasEnoughMoney(playerState: types.PlayerState, cost: number): boolean {
     return playerState.coins >= cost;
 }
 
@@ -54,54 +54,109 @@ export function hasEnoughCargoSpace(
     return playerState.cargo.length < calculateHoldMax(playerState);
 }
 
-export function makeSellEvent(
-    nextId: string, cost: number,
-    playerState: types.PlayerState, itemType: types.Cargo,
-    hasEnoughMoney: (playerState: types.PlayerState, cost: number) => boolean) {
-    return {
-                next: nextId,
-                cost,
-                getText: function (playerState: types.PlayerState, itemType: types.Cargo) {
-                    return 'Buy "High Density Foodstuffs" at '+ cost +
-                        ' coins per unit. (Currently own '
-                        + playerState.cargo.filter(s => s === itemType).length + ' units.)';
-                },
-                isActionValid: function (
-                    p: types.PlayerState,
-                    hasEnoughMoney: (playerState: types.PlayerState, cost: number) => boolean,
-                    hasEnoughCargoSpace: (
-                        playerState: types.PlayerState,
-                        calculateHoldMax: (playerState: types.PlayerState) => number
-                    ) => boolean
-                ): boolean {
-                    return (hasEnoughMoney(p, cost) && hasEnoughCargoSpace(p, calculateHoldMax(p)));
-                },
-                performAction: function (playerState: types.PlayerState) {
-                    playerState.coins -= cost;
-                    playerState.cargo.push(itemType);
-                }
-            };
+export const getItemTitle = (itemType: types.Cargo) => {
+    const FOOD_STRING = 'High Density Foodstuffs';
+    const MEDICINE_STRING = 'Medicine';
+    const LUXURY_STRING = 'Luxury Items';
+    const SUPPLIES_STRING = 'Food and Repair Supplies';
+    return itemType === 'food' ? FOOD_STRING
+        : itemType === 'medicine' ? MEDICINE_STRING
+        : itemType === 'luxury' ? LUXURY_STRING
+        : SUPPLIES_STRING;
 }
 
-export function makeBuyEvent(nextId: string, cost: number, playerState: types.PlayerState, itemType: types.Cargo) {
+export function makeSellChoice(
+    next: string, cost: number,
+    playerState: types.PlayerState, itemType: types.Cargo,
+    hasEnoughMoney: (playerState: types.PlayerState, cost: number) => boolean,
+    getItemTitle: (itemType: types.Cargo) => "High Density Foodstuffs" | "Medicine" | "Luxury Items" | "Food and Repair Supplies"
+): types.StoryChoice {
+    const itemTitle = getItemTitle(itemType);
     return {
-                next: 'marketExcelsior',
-                cost: 15,
-                getText: function (playerState: types.PlayerState, itemType: types.Cargo) {
-                    return 'Sell "High Density Foodstuffs" at '+ cost +
-                        ' coins per unit. (Currently own '
-                        + playerState.cargo.filter(s => s === itemType).length
-                        + ' units.)';
-                },
-                isActionValid: function (playerState: types.PlayerState, itemType: types.Cargo) {
-                    return playerState.cargo.filter(s => s === itemType).length > 0;
-                },
-                performAction: function (playerState: types.PlayerState, itemType: types.Cargo) {
-                    const index = playerState.cargo.indexOf(itemType);
-                    playerState.coins += this.cost;
-                    if (index > -1) {
-                        playerState.cargo.splice(index, 1);
-                    }
-                }
-            };
+        next,
+        cost,
+        getText: function (playerState: types.PlayerState, itemType: types.Cargo) {
+            return `Sell ${itemTitle} at ${cost}` +
+                ' coins per unit. (Currently own '
+                + playerState.cargo.filter(s => s === itemType).length + ' units.)';
+        },
+        isActionValid: function (playerState: types.PlayerState, itemType: types.Cargo) {
+            return playerState.cargo.indexOf(itemType) > -1;
+        },
+        performAction: function (playerState: types.PlayerState, itemType: types.Cargo) {
+            const index = playerState.cargo.indexOf(itemType);
+            if (index > -1) {
+                playerState.cargo.splice(index, 1);
+                playerState.coins += cost;
+            }
+        }
+    };
+}
+
+export function makeBuyChoice(
+    next: string, cost: number,
+    playerState: types.PlayerState, itemType: types.Cargo,
+    getItemTitle: (itemType: types.Cargo) => "High Density Foodstuffs" | "Medicine" | "Luxury Items" | "Food and Repair Supplies"
+): types.StoryChoice {
+    const itemTitle = getItemTitle(itemType);
+    return {
+        next,
+        cost,
+        getText: function (playerState: types.PlayerState, itemType: types.Cargo) {
+            return `Buy ${itemTitle} at ${cost}`
+                ' coins per unit. (Currently own '
+                + playerState.cargo.filter(s => s === itemType).length
+                + ' units.)';
+        },
+        isActionValid: function (p: types.PlayerState): boolean {
+            const hasEnoughMoney: () => boolean = () => p.coins >= this.cost;
+            const hasEnoughCargoSpace: () => boolean = () => p.cargo.length < calculateHoldMax(p);
+            return (hasEnoughMoney() && hasEnoughCargoSpace());
+        },
+        performAction: function (playerState: types.PlayerState) {
+            playerState.coins -= cost;
+            playerState.cargo.push(itemType);
+        }
+    };
+}
+
+export function makePurchaseChoices(
+    next: string,
+    sellPrices = {food: 10, medicine: 10, luxury: 10, shipSupplies: 10},
+    buyPrices = {food: 10, medicine: 10, luxury: 10, shipSupplies: 10},
+    makeSellChoice: (
+        next: string, cost: number,
+        playerState: types.PlayerState, itemType: types.Cargo,
+        hasEnoughMoney: (playerState: types.PlayerState, cost: number) => boolean,
+        getItemTitle: (itemType: types.Cargo) => "High Density Foodstuffs"
+            | "Medicine"
+            | "Luxury Items"
+            | "Food and Repair Supplies"
+    ) => types.StoryChoice,
+    makeBuyChoice: (
+        next: string, cost: number,
+        playerState: types.PlayerState, itemType: types.Cargo,
+        getItemTitle: (itemType: types.Cargo) => "High Density Foodstuffs"
+            | "Medicine"
+            | "Luxury Items"
+            | "Food and Repair Supplies"
+    ) => types.StoryChoice,
+    playerState: types.PlayerState,
+    hasEnoughMoney: (playerState: types.PlayerState, cost: number) => boolean,
+    getItemTitle: (itemType: types.Cargo) => "High Density Foodstuffs"
+            | "Medicine"
+            | "Luxury Items"
+            | "Food and Repair Supplies"
+) {
+    const choiceArray = [];
+    const cargoTypes: types.Cargo[] = ['food', 'medicine', 'luxury', 'shipSupplies'];
+    for (const itemName of cargoTypes) {
+        choiceArray.push(
+            makeBuyChoice(next, buyPrices[itemName], playerState, itemName, getItemTitle)
+        );
+        choiceArray.push(
+            makeSellChoice(next, sellPrices[itemName], playerState, itemName, hasEnoughMoney, getItemTitle)
+        );
+    }
+    return choiceArray;
 }

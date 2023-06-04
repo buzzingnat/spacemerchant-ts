@@ -1,5 +1,11 @@
 import * as types from './types';
-import { calculateHoldMax } from './utils';
+import {
+    makeSellChoice,
+    makeBuyChoice,
+    makePurchaseChoices,
+    hasEnoughMoney,
+    getItemTitle
+} from './utils';
 
 export const events = [
     {
@@ -44,6 +50,7 @@ export const events = [
                     playerState.coins -= this.cost;
                     playerState.ship = 'best';
                     playerState.crew.push({
+                        id: 'shipai',
                         name: 'Ship AI',
                         salary: 2000,
                         savings: 0,
@@ -93,7 +100,6 @@ export const events = [
     },
     {
         id: 'crewHired',
-        cost: 5000,
         title: 'Your crew so far',
         getText: function (playerState: types.PlayerState) {
             let textBase: string = `<p>Several ships are in port whose junior officers you have seen or heard of over your years in this business. What sort of skillset are you most interested in acquiring now?</p><p>So far, you have hired: </p><ul>`;
@@ -199,6 +205,7 @@ export const events = [
                 performAction: function (playerState: types.PlayerState) {
                     playerState.coins -= this.cost;
                     const person: types.Employee = {
+                        id: 'dorothy',
                         name: 'Dorothy',
                         jobTitle: 'navigator',
                         salary: this.cost/10,
@@ -243,6 +250,7 @@ export const events = [
                 performAction: function (playerState: types.PlayerState) {
                     playerState.coins -= this.cost;
                     const person: types.Employee = {
+                        id: 'eugene',
                         name: 'Eugene',
                         jobTitle: 'navigator',
                         salary: this.cost/10,
@@ -310,6 +318,7 @@ export const events = [
                 performAction: function (playerState: types.PlayerState) {
                     playerState.coins -= this.cost;
                     const person: types.Employee = {
+                        id: 'alice',
                         name: 'Alice',
                         jobTitle: 'cargoMaster',
                         salary: this.cost/10,
@@ -354,6 +363,7 @@ export const events = [
                 performAction: function (playerState: types.PlayerState) {
                     playerState.coins -= this.cost;
                     const person: types.Employee = {
+                        id: 'addams',
                         name: 'Addams',
                         jobTitle: 'navigator',
                         salary: this.cost/10,
@@ -398,6 +408,7 @@ export const events = [
                 performAction: function (playerState: types.PlayerState) {
                     playerState.coins -= this.cost;
                     const person: types.Employee = {
+                        id: 'deirdre',
                         name: 'Deirdre',
                         jobTitle: 'doctor',
                         salary: this.cost/10,
@@ -425,127 +436,18 @@ export const events = [
             const text2 = 'The listings are kept in the "Map" section of your display.';
             return `<p>${text1}</p><p>${text2}</p>`;
         },
+        createChoices: function(playerState: types.PlayerState) {
+            this.choices = [
+                ...makePurchaseChoices(
+                    'marketExcelsior',
+                    {food: 15, medicine: 15, luxury: 30, shipSupplies: 10},
+                    {food: 13, medicine: 14, luxury: 28, shipSupplies: 10},
+                    makeSellChoice, makeBuyChoice, playerState, hasEnoughMoney, getItemTitle
+                ),
+                ...this.choices
+            ];
+        },
         choices: [
-            {
-                next: 'marketExcelsior',
-                cost: 15,
-                getText: function (playerState: types.PlayerState) {
-                    return 'Buy "High Density Foodstuffs" at '+ this.cost +' coins per unit. (Currently own ' + playerState.cargo.tradeFood + ' units.)';
-                },
-                isActionValid: function (p: types.PlayerState): boolean {
-                    const hasEnoughMoney: () => boolean = () => p.coins >= this.cost;
-                    const hasEnoughCargoSpace: () => boolean = () => p.cargo.length < calculateHoldMax(p);
-                    return (hasEnoughMoney() && hasEnoughCargoSpace());
-                },
-                performAction: function (playerState: types.PlayerState) {
-                    playerState.coins -= this.cost;
-                    playerState.cargo.tradeFood += 1;
-                }
-            },
-            {
-                next: 'marketExcelsior',
-                cost: 15,
-                getText: function (playerState: types.PlayerState) {
-                    return 'Sell "High Density Foodstuffs" at '+ this.cost +' coins per unit. (Currently own ' + playerState.cargo.tradeFood + ' units.)';
-                },
-                isActionValid: function (playerState: types.PlayerState) {
-                    return playerState.cargo.tradeFood > 0;
-                },
-                performAction: function (playerState: types.PlayerState) {
-                    playerState.coins += this.cost;
-                    playerState.cargo.tradeFood -= 1;
-                }
-            },
-            {
-                next: 'marketExcelsior',
-                cost: 24,
-                getText: function (playerState: types.PlayerState) {
-                    return 'Buy "Medicine" at '+ this.cost +' coins per unit. (Currently own ' + playerState.cargo.tradeMedicine + ' units.)';
-                },
-                isActionValid: function (p: types.PlayerState): boolean {
-                    const hasEnoughMoney: () => boolean = () => p.coins >= this.cost;
-                    const hasEnoughCargoSpace: () => boolean = () => calculateCargo(p) < p.cargo.holdMax;
-                    return (hasEnoughMoney() && hasEnoughCargoSpace());
-                },
-                performAction: function (playerState: types.PlayerState) {
-                    playerState.coins -= this.cost;
-                    playerState.cargo.tradeMedicine += 1;
-                }
-            },
-            {
-                next: 'marketExcelsior',
-                cost: 24,
-                getText: function (playerState: types.PlayerState) {
-                    return 'Sell "Medicine" at '+ this.cost +' coins per unit. (Currently own ' + playerState.cargo.tradeMedicine + ' units.)';
-                },
-                isActionValid: function (playerState: types.PlayerState) {
-                    return playerState.cargo.tradeMedicine > 0;
-                },
-                performAction: function (playerState: types.PlayerState) {
-                    playerState.coins += this.cost;
-                    playerState.cargo.tradeMedicine -= 1;
-                }
-            },
-            {
-                next: 'marketExcelsior',
-                cost: 6,
-                getText: function (playerState: types.PlayerState) {
-                    return 'Buy "Luxury Items" at '+ this.cost +' coins per unit. (Currently own ' + playerState.cargo.tradeLuxury + ' units.)';
-                },
-                isActionValid: function (p: types.PlayerState): boolean {
-                    const hasEnoughMoney: () => boolean = () => p.coins >= this.cost;
-                    const hasEnoughCargoSpace: () => boolean = () => calculateCargo(p) < p.cargo.holdMax;
-                    return (hasEnoughMoney() && hasEnoughCargoSpace());
-                },
-                performAction: function (playerState: types.PlayerState) {
-                    playerState.coins -= this.cost;
-                    playerState.cargo.tradeLuxury += 1;
-                }
-            },
-            {
-                next: 'marketExcelsior',
-                cost: 6,
-                getText: function (playerState: types.PlayerState) {
-                    return 'Sell "Luxury Items" at '+ this.cost +' coins per unit. (Currently own ' + playerState.cargo.tradeLuxury + ' units.)';
-                },
-                isActionValid: function (playerState: types.PlayerState) {
-                    return playerState.cargo.tradeLuxury > 0;
-                },
-                performAction: function (playerState: types.PlayerState) {
-                    playerState.coins += this.cost;
-                    playerState.cargo.tradeLuxury -= 1;
-                }
-            },
-            {
-                next: 'marketExcelsior',
-                cost: 10,
-                getText: function (playerState: types.PlayerState) {
-                    return 'Buy "Food and Repair Supplies" at '+ this.cost +' coins per unit. (Currently own ' + playerState.cargo.shipSupplies + ' units.)';
-                },
-                isActionValid: function (p: types.PlayerState): boolean {
-                    const hasEnoughMoney: () => boolean = () => p.coins >= this.cost;
-                    const hasEnoughCargoSpace: () => boolean = () => calculateCargo(p) < p.cargo.holdMax;
-                    return (hasEnoughMoney() && hasEnoughCargoSpace());
-                },
-                performAction: function (playerState: types.PlayerState) {
-                    playerState.coins -= this.cost;
-                    playerState.cargo.shipSupplies += 1;
-                }
-            },
-            {
-                next: 'marketExcelsior',
-                cost: 0,
-                getText: function (playerState: types.PlayerState) {
-                    return 'Dump "Food and Repair Supplies" to make more room in your cargo hold. (Currently own ' + playerState.cargo.shipSupplies + ' units.)';
-                },
-                isActionValid: function (playerState: types.PlayerState) {
-                    return playerState.cargo.shipSupplies > 0;
-                },
-                performAction: function (playerState: types.PlayerState) {
-                    playerState.coins += this.cost;
-                    playerState.cargo.shipSupplies -= 1;
-                }
-            },
             {
                 next: 'maidenVoyage',
                 text: 'You finish stocking up and settle in for a long ride to Haliax Station in the Ganymede Prime system, your next port. You\'re headed home to your family. It\'s been almost a year since you last saw them.'
@@ -628,119 +530,18 @@ export const events = [
             var text2 = 'The listings are kept in the "Map" section of your display.';
             return `<p>${text1}</p><p>${text2}</p>`;
         },
+        createChoices: function(playerState: types.PlayerState) {
+            this.choices = [
+                ...makePurchaseChoices(
+                    'marketHaliax',
+                    {food: 5, medicine: 5, luxury: 10, shipSupplies: 5},
+                    {food: 3, medicine: 4, luxury: 8, shipSupplies: 5},
+                    makeSellChoice, makeBuyChoice, playerState, hasEnoughMoney, getItemTitle
+                ),
+                ...this.choices
+            ];
+        },
         choices: [
-            {
-                cost: 5,
-                getText: function (playerState: types.PlayerState) {
-                    return 'Buy "High Density Foodstuffs" at '+ this.cost +' coins per unit. (Currently own ' + playerState.cargo.tradeFood + ' units.)';
-                },
-                isActionValid: function (p: types.PlayerState): boolean {
-                    const hasEnoughMoney: () => boolean = () => p.coins >= this.cost;
-                    const hasEnoughCargoSpace: () => boolean = () => calculateCargo(p) < p.cargo.holdMax;
-                    return (hasEnoughMoney() && hasEnoughCargoSpace());
-                },
-                performAction: function (playerState: types.PlayerState) {
-                    playerState.coins -= this.cost;
-                    playerState.cargo.tradeFood += 1;
-                }
-            },
-            {
-                cost: 5,
-                getText: function (playerState: types.PlayerState) {
-                    return 'Sell "High Density Foodstuffs" at '+ this.cost +' coins per unit. (Currently own ' + playerState.cargo.tradeFood + ' units.)';
-                },
-                isActionValid: function (playerState: types.PlayerState) {
-                    return playerState.cargo.tradeFood > 0;
-                },
-                performAction: function (playerState: types.PlayerState) {
-                    playerState.coins += this.cost;
-                    playerState.cargo.tradeFood -= 1;
-                }
-            },
-            {
-                cost: 14,
-                getText: function (playerState: types.PlayerState) {
-                    return 'Buy "Medicine" at '+ this.cost +' coins per unit. (Currently own ' + playerState.cargo.tradeMedicine + ' units.)';
-                },
-                isActionValid: function (p: types.PlayerState): boolean {
-                    const hasEnoughMoney: () => boolean = () => p.coins >= this.cost;
-                    const hasEnoughCargoSpace: () => boolean = () => calculateCargo(p) < p.cargo.holdMax;
-                    return (hasEnoughMoney() && hasEnoughCargoSpace());
-                },
-                performAction: function (playerState: types.PlayerState) {
-                    playerState.coins -= this.cost;
-                    playerState.cargo.tradeMedicine += 1;
-                }
-            },
-            {
-                cost: 14,
-                getText: function (playerState: types.PlayerState) {
-                    return 'Sell "Medicine" at '+ this.cost +' coins per unit. (Currently own ' + playerState.cargo.tradeMedicine + ' units.)';
-                },
-                isActionValid: function (playerState: types.PlayerState) {
-                    return playerState.cargo.tradeMedicine > 0;
-                },
-                performAction: function (playerState: types.PlayerState) {
-                    playerState.coins += this.cost;
-                    playerState.cargo.tradeMedicine -= 1;
-                }
-            },
-            {
-                cost: 22,
-                getText: function (playerState: types.PlayerState) {
-                    return 'Buy "Luxury Items" at '+ this.cost +' coins per unit. (Currently own ' + playerState.cargo.tradeLuxury + ' units.)';
-                },
-                isActionValid: function (p: types.PlayerState): boolean {
-                    const hasEnoughMoney: () => boolean = () => p.coins >= this.cost;
-                    const hasEnoughCargoSpace: () => boolean = () => calculateCargo(p) < p.cargo.holdMax;
-                    return (hasEnoughMoney() && hasEnoughCargoSpace());
-                },
-                performAction: function (playerState: types.PlayerState) {
-                    playerState.coins -= this.cost;
-                    playerState.cargo.tradeLuxury += 1;
-                }
-            },
-            {
-                cost: 22,
-                getText: function (playerState: types.PlayerState) {
-                    return 'Sell "Luxury Items" at '+ this.cost +' coins per unit. (Currently own ' + playerState.cargo.tradeLuxury + ' units.)';
-                },
-                isActionValid: function (playerState: types.PlayerState) {
-                    return playerState.cargo.tradeLuxury > 0;
-                },
-                performAction: function (playerState: types.PlayerState) {
-                    playerState.coins += this.cost;
-                    playerState.cargo.tradeLuxury -= 1;
-                }
-            },
-            {
-                cost: 10,
-                getText: function (playerState: types.PlayerState) {
-                    return 'Buy "Food and Repair Supplies" at '+ this.cost +' coins per unit. (Currently own ' + playerState.cargo.shipSupplies + ' units.)';
-                },
-                isActionValid: function (p: types.PlayerState): boolean {
-                    const hasEnoughMoney: () => boolean = () => p.coins >= this.cost;
-                    const hasEnoughCargoSpace: () => boolean = () => calculateCargo(p) < p.cargo.holdMax;
-                    return (hasEnoughMoney() && hasEnoughCargoSpace());
-                },
-                performAction: function (playerState: types.PlayerState) {
-                    playerState.coins -= this.cost;
-                    playerState.cargo.shipSupplies += 1;
-                }
-            },
-            {
-                cost: 0,
-                getText: function (playerState: types.PlayerState) {
-                    return 'Dump "Food and Repair Supplies" to make more room in your cargo hold. (Currently own ' + playerState.cargo.shipSupplies + ' units.)';
-                },
-                isActionValid: function (playerState: types.PlayerState) {
-                    return playerState.cargo.shipSupplies > 0;
-                },
-                performAction: function (playerState: types.PlayerState) {
-                    playerState.coins += this.cost;
-                    playerState.cargo.shipSupplies -= 1;
-                }
-            },
             {
                 next: 'arriveEuropa',
                 getText: function (playerState: types.PlayerState) {
@@ -792,119 +593,17 @@ export const events = [
             const text2 = 'The listings are kept in the "Map" section of your display.';
             return `<p>${text1}</p><p>${text2}</p>`;
         },
-        choices: [
-            {
-                cost: 23,
-                getText: function (playerState: types.PlayerState) {
-                    return 'Buy "High Density Foodstuffs" at '+ this.cost +' coins per unit. (Currently own ' + playerState.cargo.tradeFood + ' units.)';
-                },
-                isActionValid: function (p: types.PlayerState): boolean {
-                    const hasEnoughMoney: () => boolean = () => p.coins >= this.cost;
-                    const hasEnoughCargoSpace: () => boolean = () => calculateCargo(p) < p.cargo.holdMax;
-                    return (hasEnoughMoney() && hasEnoughCargoSpace());
-                },
-                performAction: function (playerState: types.PlayerState) {
-                    playerState.coins -= this.cost;
-                    playerState.cargo.tradeFood += 1;
-                }
-            },
-            {
-                cost: 23,
-                getText: function (playerState: types.PlayerState) {
-                    return 'Sell "High Density Foodstuffs" at '+ this.cost +' coins per unit. (Currently own ' + playerState.cargo.tradeFood + ' units.)';
-                },
-                isActionValid: function (playerState: types.PlayerState) {
-                    return playerState.cargo.tradeFood > 0;
-                },
-                performAction: function (playerState: types.PlayerState) {
-                    playerState.coins += this.cost;
-                    playerState.cargo.tradeFood -= 1;
-                }
-            },
-            {
-                cost: 9,
-                getText: function (playerState: types.PlayerState) {
-                    return 'Buy "Medicine" at '+ this.cost +' coins per unit. (Currently own ' + playerState.cargo.tradeMedicine + ' units.)';
-                },
-                isActionValid: function (p: types.PlayerState): boolean {
-                    const hasEnoughMoney: () => boolean = () => p.coins >= this.cost;
-                    const hasEnoughCargoSpace: () => boolean = () => calculateCargo(p) < p.cargo.holdMax;
-                    return (hasEnoughMoney() && hasEnoughCargoSpace());
-                },
-                performAction: function (playerState: types.PlayerState) {
-                    playerState.coins -= this.cost;
-                    playerState.cargo.tradeMedicine += 1;
-                }
-            },
-            {
-                cost: 9,
-                getText: function (playerState: types.PlayerState) {
-                    return 'Sell "Medicine" at '+ this.cost +' coins per unit. (Currently own ' + playerState.cargo.tradeMedicine + ' units.)';
-                },
-                isActionValid: function (playerState: types.PlayerState) {
-                    return playerState.cargo.tradeMedicine > 0;
-                },
-                performAction: function (playerState: types.PlayerState) {
-                    playerState.coins += this.cost;
-                    playerState.cargo.tradeMedicine -= 1;
-                }
-            },
-            {
-                cost: 21,
-                getText: function (playerState: types.PlayerState) {
-                    return 'Buy "Luxury Items" at '+ this.cost +' coins per unit. (Currently own ' + playerState.cargo.tradeLuxury + ' units.)';
-                },
-                isActionValid: function (p: types.PlayerState): boolean {
-                    const hasEnoughMoney: () => boolean = () => p.coins >= this.cost;
-                    const hasEnoughCargoSpace: () => boolean = () => calculateCargo(p) < p.cargo.holdMax;
-                    return (hasEnoughMoney() && hasEnoughCargoSpace());
-                },
-                performAction: function (playerState: types.PlayerState) {
-                    playerState.coins -= this.cost;
-                    playerState.cargo.tradeLuxury += 1;
-                }
-            },
-            {
-                cost: 21,
-                getText: function (playerState: types.PlayerState) {
-                    return 'Sell "Luxury Items" at '+ this.cost +' coins per unit. (Currently own ' + playerState.cargo.tradeLuxury + ' units.)';
-                },
-                isActionValid: function (playerState: types.PlayerState) {
-                    return playerState.cargo.tradeLuxury > 0;
-                },
-                performAction: function (playerState: types.PlayerState) {
-                    playerState.coins += this.cost;
-                    playerState.cargo.tradeLuxury -= 1;
-                }
-            },
-            {
-                cost: 10,
-                getText: function (playerState: types.PlayerState) {
-                    return 'Buy "Food and Repair Supplies" at '+ this.cost +' coins per unit. (Currently own ' + playerState.cargo.shipSupplies + ' units.)';
-                },
-                isActionValid: function (p: types.PlayerState): boolean {
-                    const hasEnoughMoney: () => boolean = () => p.coins >= this.cost;
-                    const hasEnoughCargoSpace: () => boolean = () => calculateCargo(p) < p.cargo.holdMax;
-                    return (hasEnoughMoney() && hasEnoughCargoSpace());
-                },
-                performAction: function (playerState: types.PlayerState) {
-                    playerState.coins -= this.cost;
-                    playerState.cargo.shipSupplies += 1;
-                }
-            },
-            {
-                cost: 0,
-                getText: function (playerState: types.PlayerState) {
-                    return 'Dump "Food and Repair Supplies" to make more room in your cargo hold. (Currently own ' + playerState.cargo.shipSupplies + ' units.)';
-                },
-                isActionValid: function (playerState: types.PlayerState) {
-                    return playerState.cargo.shipSupplies > 0;
-                },
-                performAction: function (playerState: types.PlayerState) {
-                    playerState.coins += this.cost;
-                    playerState.cargo.shipSupplies -= 1;
-                }
-            },
-        ]
+        createChoices: function(playerState: types.PlayerState) {
+            this.choices = [
+                ...makePurchaseChoices(
+                    'marketEuropa',
+                    {food: 25, medicine: 25, luxury: 3, shipSupplies: 15},
+                    {food: 23, medicine: 24, luxury: 2, shipSupplies: 15},
+                    makeSellChoice, makeBuyChoice, playerState, hasEnoughMoney, getItemTitle
+                ),
+                ...this.choices
+            ];
+        },
+        choices: []
     },
 ];

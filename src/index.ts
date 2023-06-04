@@ -16,12 +16,18 @@ const playerState: types.PlayerState = {
   coins: 100000,
   cargo: [],
   shipStats: {holdMax: 0, health: 0, speed: 0},
-  totalStats: {holdMax: 0, health: 0, speed: 0},
+  miniEvent: {
+      mainCharacter: '',
+      secondCharacter: '',
+      thirdCharacter: '',
+      locationList: []
+  },
   ship: '',
   passengers: [],
   crew: [],
   costChoice: 0,
   updateUI: false,
+  currentLocationId: 'excelsior',
 };
 /* end PLAYER STATE */
 
@@ -101,12 +107,72 @@ function makeStatsTab(selected: boolean, jsDom: {[key: string]: HTMLElement}): {
 
 function makeMapTab(selected: boolean, jsDom: {[key: string]: HTMLElement}): {[key: string]: HTMLElement} {
     // content for tab 2
+    const canvasElem: HTMLCanvasElement = tag('canvas', 'mapCanvas');
+    canvasElem.setAttribute('width', '220');
+    canvasElem.setAttribute('height', '300');
+
+    // START MAP DRAWING
+    const canvas = canvasElem;
+    const context = canvas.getContext("2d");
+
+    context.fillStyle = "black";
+    context.fillRect(0, 0, canvas.width, canvas.height);
+
+    //const stationList = [{x: 50, y: 50, name: 'excelsior', connect: ['tau', 'gamma']}, {x: 150, y: 50, name: 'tau', connect: ['excelsior']}, {x: 100, y: 200, name: 'gamma', connect: []}];
+
+    for (const station of map) {
+        context.fillStyle = "aliceblue";
+        context.beginPath();
+        context.arc(station.x, station.y, 15, 0, 180);
+        context.fill();
+
+        const fontSize = 18;
+        context.font = `${fontSize}px sans-serif`;
+        context.textAlign = "center";
+        context.fillStyle = "aqua";
+        context.fillText(station.id, station.x, station.y-fontSize*1.5);
+        for (const id of station.connects) {
+            // station is source, destination is target.
+            const destination = map.find(dest => dest.id === id);
+            const dx = destination.x - station.x, dy = destination.y - station.y;
+            const theta = Math.atan2(dy, dx);
+            const nx = Math.cos(theta), ny = Math.sin(theta);
+            const perpx = Math.cos(theta-Math.PI/2), perpy = Math.sin(theta-Math.PI/2);
+            // const mag = Math.sqrt(dx*dx + dy*dy)
+            // const nx = dx / mag, ny = dy / mag;
+
+            // line
+            context.beginPath();
+            context.strokeStyle = "silver";
+            context.lineWidth = 3;
+            const padding = 10;
+            const d = 15 + padding;
+            context.moveTo(station.x + (d+2) * nx, station.y + (d+2) * ny);
+            context.lineTo(destination.x - (d+2) * nx, destination.y - (d+2) * ny);
+            context.stroke();
+
+            // arrow
+            const arrowLength = 10;
+            const arrowWidth = 12;
+            context.beginPath();
+            context.fillStyle = "silver";
+            context.moveTo(destination.x - d * nx, destination.y - d * ny);
+            context.lineTo(destination.x - (d + arrowLength) * nx - arrowWidth * perpx, destination.y - (d + arrowLength) * ny - arrowWidth * perpy);
+            context.lineTo(destination.x - (d + arrowLength) * nx + arrowWidth * perpx, destination.y - (d + arrowLength) * ny + arrowWidth * perpy);
+            context.lineTo(destination.x - d * nx, destination.y - d * ny);
+            context.fill();
+        }
+    }
+    // END MAP DRAWING
+
     const accordionWrapperElem: HTMLElement = tag('div', 'accordionWrapper');
     const tabContentElem = tag('div', `js-tabContent tabContent tabContent2 ${selected ? 'selected' : ''}`);
     for(let i = 0; i < map.length; i++) {
         displayAccordionLocation(map[i], accordionWrapperElem);
     }
+    tabContentElem.appendChild(canvasElem);
     tabContentElem.appendChild(accordionWrapperElem);
+    jsDom.mapCanvas = canvasElem;
     jsDom.mapTabContentElem = tabContentElem;
     return {tabContentElem};
 }
@@ -213,12 +279,9 @@ if (typeof window !== "object") {
     tabsElemAsArray.forEach((elem: Element) => {
         elem.addEventListener('click', (event) => {
             const clickedTab = event.target as HTMLElement;
-            console.log({clickedTab});
             tabsElemAsArray.forEach(elem => elem.classList.remove('selected'));
             tabsContentElemAsArray.forEach(elem => elem.classList.remove('selected'));
-            console.log({unselected: clickedTab.classList});
             clickedTab.classList.add('selected');
-            console.log({selectedAgain: clickedTab.classList});
             if (clickedTab.classList.contains('tab1')) {
                 tabsElem.getElementsByClassName( 'tabContent1' )[0]?.classList.add('selected');
             }
@@ -323,7 +386,6 @@ function updateMeasureBar(bar: HTMLElement, barNum: HTMLElement, currentValue: n
     }
     const barWidth = bar.offsetWidth;
     const borderWidth = Math.round((currentValue/maxValue)*barWidth);
-    console.log({barWidth, borderWidth});
     bar.style.background = COL_DKGRAY;
     bar.style.borderLeftWidth = borderWidth+'px';
     barNum.innerText = currentValue + '/' + maxValue;
@@ -417,6 +479,11 @@ function displayEvent(
     eventWrapperElem.appendChild(eventTextWrapperElem);
     const choicesWrapperElem: HTMLElement = tag('div', 'choicesWrapper');
     eventWrapperElem.appendChild(choicesWrapperElem);
+    if (storyEvent.createChoices !== undefined) {
+        console.log('before createChoices', storyEvent.choices.length);
+        storyEvent.createChoices(playerState);
+        console.log('after createChoices', storyEvent.choices.length);
+    }
     for (let i = 0; i < storyEvent.choices.length; i++) {
         const choice = storyEvent.choices[i];
         const choiceElem: HTMLElement = tag('div', 'choice');

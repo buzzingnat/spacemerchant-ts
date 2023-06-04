@@ -1,4 +1,5 @@
 export interface Person {
+    id: string;
     name: string;
     savings: number;
 }
@@ -34,16 +35,18 @@ export interface PlayerState {
         speed: number;
         health: number;
     },
-    totalStats: {
-        holdMax: number;
-        speed: number;
-        health: number;
+    miniEvent: {
+        mainCharacter: Person['id'];
+        secondCharacter: Person['id'];
+        thirdCharacter: Person['id'];
+        locationList: Location['id'][];
     },
     ship: string;
     passengers: Passenger[];
     crew: Employee[];
     costChoice: number;
     updateUI: boolean;
+    currentLocationId: Location['id'];
 }
 
 export interface StoryEvent {
@@ -51,14 +54,15 @@ export interface StoryEvent {
     title: string;
     getText?: (playerState: PlayerState) => string;
     text?: string[];
+    createChoices?: (playerState: PlayerState) => StoryChoice[];
     choices: StoryChoice[];
     cost?: number;
 }
 export interface StoryChoice {
     next: string;
     cost?: number;
-    getText?: (playerState: PlayerState) => string;
+    getText?: (playerState: PlayerState, itemType?: Cargo) => string;
     text?: string[];
-    isActionValid?: (playerState: PlayerState) => boolean;
-    performAction?: (playerState: PlayerState) => void;
+    isActionValid?: (playerState: PlayerState, itemType?: Cargo) => boolean;
+    performAction?: (playerState: PlayerState, itemType?: Cargo) => void;
 }
