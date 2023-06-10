@@ -4,39 +4,17 @@
     }
 }
 
-@media screen and (max-resolution: 600dpi) {
-  .header {
-    background: green;
-  }
-}
-
-@media screen and (max-resolution: 400dpi) {
-  .header {
-    background: orange;
-  }
-}
-
-@media screen and (max-resolution: 300dpi) {
-  .header {
-    background: red;
-  }
-}
-
-@media screen and (max-resolution: 100dpi) {
-  .header {
-    background: blue;
-  }
-}
-
-@media screen and (max-resolution: 50dpi) {
-  .header {
-    background: purple;
-  }
-}
-
-@media screen and (max-width: 850px), (max-resolution: 400dpi) {
-  .mainGameContainer, .header {
+@media screen and (max-width: 850px) {
+  .mainGameContainer, .header, .iframeWrapper, .footer {
     width: 95%;
+  }
+  .footer {
+    top: calc(81vh + 10px + 50px);
+    position: absolute;
+    text-align: center;
+  }
+  .iframeWrapper > iframe {
+    width: 100%;
   }
   .js-mainGame.js-mouseContainer.mainGame {
     box-sizing: border-box;

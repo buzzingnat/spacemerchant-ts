@@ -15,8 +15,9 @@ var redraw, g, renderer;
 
 function displayGraph() {
 
-    var width = $(document).width() - 20;
-    var height = $(document).height() - 60;
+    var canvasElement = document.getElementById('canvas');
+    var width = canvasElement.clientWidth;
+    var height = canvasElement.clientHeight;
     var events = window.parent.storyEvents;
 
     var g = new Graph();
@@ -55,7 +56,6 @@ function displayGraph() {
 	return set;
     };
     $.each(events, function(eventKey, event){
-    	// console.log('runs while using events', {eventKey, event});
     	for (var i = 0; i < event.choices.length; i++){
     	    var next = event.choices[i].next;
             var eventId = event.id;
@@ -75,7 +75,7 @@ function displayGraph() {
     	    graphEvent.render = renderNoExist;
     	    continue;
     	}
-    	// Find and style events that have no next event among its choices.
+    	// Find and style events that have no next event among choices.
     	for (var i = 0; i < storyEvent.choices.length; i++){
             console.log();
     	    if (storyEvent.choices[i].next) {
