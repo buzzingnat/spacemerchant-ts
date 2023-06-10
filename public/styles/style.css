@@ -19,11 +19,17 @@ h1, h2, h3, h4, h5, h6, .tab, .barLabel {font-family: 'Josefin Slab', serif;}
     color: #222;
     margin: 0;
 }
+.mainGameContainer {
+  display: block;
+  width: 800px;
+  margin: 0 auto;
+}
 .mainGame {
     position: relative;
-    margin: -20px auto 0 auto;
+    margin: 0 auto;
     width: 800px;
     height: 600px;
+    display: flex;
 }
 .header {
     width: 800px;
@@ -46,6 +52,7 @@ Graph Button Container styling.
 }
 /* end Footnotes styling */
 .left, .center, .right {
+    flex: 1;
     position: relative;
     box-sizing: border-box;
     background-color: transparent;
@@ -53,53 +60,36 @@ Graph Button Container styling.
     border: thin #888 solid; /*DKGRAY*/
 }
 .left{
-    float: left;
-    margin-top: -600px;
-    width: 6%;
+    visibility: hidden;
     display: none;
+    opacity: 0;
 }
 .center{
-    /* -- for when the left column is visible --
-    margin: 20px auto auto 7%;
-    width: 26%;
-    */
-    margin: 20px auto auto 0;
-    width: 30%;
-    border: none;
-    font-size: 14px;
 }
 .js-scrollBox {
     top: 0;
     position: relative;
 }
 .right{
-    float: right;
-    margin: -600px auto auto auto;
-    /* -- for when the left column is visible --
-    width: 66%;
-    */
-    width: 69%;
+    flex: 2;
 }
-.arrow-up {
+.arrow-up, .arrow-down {
     width: 0;
     height: 0;
     border-left: 17px solid transparent;
     border-right: 17px solid transparent;
-    border-bottom: 20px solid silver; /*LTGRAY*/
     position: relative;
     margin: 8px auto;
+    cursor: pointer;
+}
+.arrow-up {
+    border-bottom: 20px solid silver; /*LTGRAY*/
 }
 .arrow-up:hover {
   border-bottom-color: gray; /*DKGRAY*/
 }
 .arrow-down {
-    width: 0;
-    height: 0;
-    border-left: 17px solid transparent;
-    border-right: 17px solid transparent;
     border-top: 20px solid #bbb; /*LTGRAY*/
-    position: relative;
-    margin: 8px auto;
 }
 .arrow-down:hover {
   border-top-color: gray; /*DKGRAY*/
@@ -111,7 +101,7 @@ Graph Button Container styling.
     border: thin solid #888;
     display: block;
     margin: 8px 0;
-    right: 15px;
+    left: 5px;
     top: 0;
 }
 .arrowWrapper + .arrow-down {
@@ -289,7 +279,7 @@ Story Box Styling
 -- */
 .storyContentWrapper {
     margin: 2px auto;
-    width: 24em;
+    width: 22em;
 }
 .storyContentWrapper p, .storyContentWrapper ul, .storyContentWrapper p span {font-size: 16px;}
 .storyContentWrapper ul {
@@ -375,7 +365,7 @@ iframe {
     top: 50px;
     margin: auto;
     width: 800px;
-    height: 600px;
+    height: 81vh;
     border: thin gray solid;
     box-sizing: border-box;
     visibility: hidden;

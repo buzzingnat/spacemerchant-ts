@@ -242,14 +242,23 @@ if (typeof window !== "object") {
     showGraphButtonElem.addEventListener('click', showGraph);
     const hideGraphButtonElem = getHideGraphButtonElem()!;
     hideGraphButtonElem.addEventListener('click', hideGraph);
-    const statsBoxElem: HTMLElement = tag('div', 'js-statsBox js-tabbedArea center');
+    const statsBoxWrapperElem: HTMLElement = tag('div', 'js-statsBox js-tabbedArea center');
+    statsBoxWrapperElem.setAttribute('id', 'open-modal');
+    const statsBoxElem: HTMLElement = tag('div', 'statsBoxInner');
+    statsBoxWrapperElem.appendChild(statsBoxElem);
+    const statsBoxOpenElem: HTMLElement = tag('div', 'modal-open statsBox-open');
+    statsBoxOpenElem.innerHTML = '<a href="#open-modal">&#9776;</a>';
+    const statsBoxCloseElem: HTMLElement = tag('div', 'modal-close statsBox-close');
+    statsBoxCloseElem.innerHTML = '<a href="#close-modal">&#x2715;</a>';
     const controlBoxElem: HTMLElement = tag('div', 'js-controlBox left');
     const storyBoxElem: HTMLElement = tag('div', 'js-storyBox right');
     const scrollBoxElem: HTMLElement = tag('div', 'js-scrollbox');
 
-    mainGameElem.appendChild( statsBoxElem );
-    mainGameElem.appendChild( controlBoxElem );
+
     mainGameElem.appendChild( storyBoxElem );
+    mainGameElem.appendChild( statsBoxWrapperElem );
+    mainGameElem.appendChild( statsBoxOpenElem );
+    mainGameElem.appendChild( controlBoxElem );
     storyBoxElem.appendChild( scrollBoxElem );
     controlBoxElem.appendChild(buildIcon('play'));
     controlBoxElem.appendChild(buildIcon('save'));
@@ -272,6 +281,7 @@ if (typeof window !== "object") {
     tabsElem.appendChild(jsDom.mapTabContentElem);
     tabsElem.appendChild(jsDom.itemTabContentElem);
     statsBoxElem.appendChild(tabsElem);
+    statsBoxElem.appendChild(statsBoxCloseElem);
 
     const tabsElemAsArray = Array.from(tabsElem.getElementsByClassName('js-tab'));
     const tabsContentElemAsArray = Array.from(tabsElem.getElementsByClassName('js-tabContent'));
@@ -304,7 +314,9 @@ if (typeof window !== "object") {
     clickAndHold(() => scrollUpStory(storyBoxElem), arrowUpElem);
     clickAndHold(() => scrollDownStory(storyBoxElem), arrowDownElem);
 
+    jsDom.statsBoxWrapperElem = statsBoxWrapperElem;
     jsDom.statsBoxElem = statsBoxElem;
+    jsDom.statsBoxOpenElem = statsBoxOpenElem;
     jsDom.controlBoxElem = controlBoxElem;
     jsDom.storyBoxElem = storyBoxElem;
     jsDom.scrollBoxElem = scrollBoxElem;
