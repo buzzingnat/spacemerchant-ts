@@ -9,8 +9,6 @@
     width: 95%;
   }
   .footer {
-    top: calc(81vh + 10px + 50px);
-    position: absolute;
     text-align: center;
   }
   .iframeWrapper > iframe {
@@ -33,7 +31,7 @@
     position: absolute;
     overflow-y: scroll;
     width: 95%;
-    left: 2.5%;
+    left: 10%;
   }
   .storyContentWrapper, .choicesWrapper {
     width: auto;
@@ -98,9 +96,5 @@
   .tabContent {
     background: #fff;
     height: calc(100% - 24px);
-  }
-  .arrowWrapper {
-    right: -25px;
-    left: auto;
   }
 }

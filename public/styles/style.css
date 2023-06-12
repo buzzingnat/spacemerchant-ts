@@ -28,7 +28,7 @@ h1, h2, h3, h4, h5, h6, .tab, .barLabel {font-family: 'Josefin Slab', serif;}
     position: relative;
     margin: 0 auto;
     width: 800px;
-    height: 600px;
+    height: 81vh;
     display: flex;
 }
 .header {
@@ -56,7 +56,7 @@ Graph Button Container styling.
     position: relative;
     box-sizing: border-box;
     background-color: transparent;
-    height: 600px;
+    height: 81vh;
     border: thin #888 solid; /*DKGRAY*/
 }
 .left{
@@ -73,44 +73,16 @@ Graph Button Container styling.
 .right{
     flex: 2;
 }
-.arrow-up, .arrow-down {
-    width: 0;
-    height: 0;
-    border-left: 17px solid transparent;
-    border-right: 17px solid transparent;
-    position: relative;
-    margin: 8px auto;
-    cursor: pointer;
-}
-.arrow-up {
-    border-bottom: 20px solid silver; /*LTGRAY*/
-}
-.arrow-up:hover {
-  border-bottom-color: gray; /*DKGRAY*/
-}
-.arrow-down {
-    border-top: 20px solid #bbb; /*LTGRAY*/
-}
-.arrow-down:hover {
-  border-top-color: gray; /*DKGRAY*/
-}
-.arrowWrapper {
-    height: auto;
-    width: 40px;
-    position: absolute;
-    border: thin solid #888;
-    display: block;
-    margin: 8px 0;
-    left: 5px;
-    top: 0;
-}
-.arrowWrapper + .arrow-down {
-    top: 50px;
-}
 
 /* --
 Tab menu styling
 -- */
+.modal-close {
+    display: none;
+    visibility: hidden;
+    height: 0;
+    width: 0;
+}
 ul {list-style: none; padding: 0; margin: 0; position: relative; top: -1px;}
 /* The Menu */
 .tab {
@@ -145,7 +117,7 @@ ul {list-style: none; padding: 0; margin: 0; position: relative; top: -1px;}
 }
 /* The Content */
 .tabContent {
-    height: 575px;
+    height: calc(81vh - 25px);
     width: 100%;
     display: none;
     font-size: 1.1em;
@@ -355,17 +327,17 @@ Graph Iframe Styling
 -- */
 iframe {
     width: 800px;
-    height: 600px;
+    height: 81vh;
     border: none;
 }
 .iframeWrapper {
-    position: absolute;
+    position: relative;
     left: 0;
     right: 0;
-    top: 50px;
+    top: 0;
     margin: auto;
     width: 800px;
-    height: 81vh;
+    height: 0; /* initial height to hide graph on page load */
     border: thin gray solid;
     box-sizing: border-box;
     visibility: hidden;

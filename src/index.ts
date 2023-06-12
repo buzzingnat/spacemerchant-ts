@@ -304,25 +304,12 @@ if (typeof window !== "object") {
         })
     });
 
-    //create scroll buttons that hover in the top right corner
-    const arrowWrapperElem = tag('div', 'arrowWrapper');
-    const arrowUpElem = tag('div', 'arrow-up');
-    const arrowDownElem = tag('div', 'arrow-down');
-    arrowWrapperElem.appendChild(arrowUpElem);
-    arrowWrapperElem.appendChild(arrowDownElem);
-    mainGameElem.appendChild(arrowWrapperElem);
-    clickAndHold(() => scrollUpStory(storyBoxElem), arrowUpElem);
-    clickAndHold(() => scrollDownStory(storyBoxElem), arrowDownElem);
-
     jsDom.statsBoxWrapperElem = statsBoxWrapperElem;
     jsDom.statsBoxElem = statsBoxElem;
     jsDom.statsBoxOpenElem = statsBoxOpenElem;
     jsDom.controlBoxElem = controlBoxElem;
     jsDom.storyBoxElem = storyBoxElem;
     jsDom.scrollBoxElem = scrollBoxElem;
-    jsDom.arrowWrapperElem = arrowWrapperElem;
-    jsDom.arrowUpElem = arrowUpElem;
-    jsDom.arrowDownElem = arrowDownElem;
 
     //CALL THE FUNCTION displayEvent AND USE IT TO CREATE THE FIRST EVENT ON THE SCREEN
     window.onload = () => {
@@ -370,14 +357,22 @@ function showGraph() {
         return;
     }
     jsDom.mainGameElem.style.display = 'none';
+    jsDom.mainGameElem.style.visibility = 'hidden';
     jsDom.iframeWrapperElem.style.visibility = 'visible';
+    jsDom.iframeWrapperElem.style.display = 'block';
+    jsDom.iframeWrapperElem.style.height = '81vh';
+    jsDom.iframeWrapperElem.style.overflow = 'hidden';
 }
 function hideGraph() {
     if (!document) {
         return;
     }
-    jsDom.mainGameElem.style.display = 'block';
+    jsDom.mainGameElem.style.display = 'flex';
+    jsDom.mainGameElem.style.visibility = 'visible';
     jsDom.iframeWrapperElem.style.visibility = 'hidden';
+    jsDom.iframeWrapperElem.style.display = 'none';
+    jsDom.iframeWrapperElem.style.height = '0';
+    jsDom.iframeWrapperElem.style.overflow = 'auto';
 }
 /* end TOGGLE EVENT GRAPH VISIBILITY */
 
@@ -432,33 +427,6 @@ function displayAccordionLocation(location: types.Location, accordionWrapperElem
 /**
  *end STATS BOX CONTROLS
  **/
-
-/**
- *SCROLL BUTTONS
- **/
-//on click scrolling for the scroll buttons
-function scrollUpStory(storyBoxElem: HTMLElement): void {
-  storyBoxElem.scrollTop -= 3;
-}
-function scrollDownStory(storyBoxElem: HTMLElement): void {
-  storyBoxElem.scrollTop += 3;
-}
-
-//when mouse is clicked and held, keep taking an action until mouseup or mouseleave
-function clickAndHold(actionToTake: () => void, elementClicked: HTMLElement): void {
-  let timeoutId: NodeJS.Timer;
-  elementClicked.addEventListener('mousedown', () => {
-      timeoutId = setInterval(actionToTake, 10);
-  });
-  elementClicked.addEventListener('mouseup', () => {
-    clearTimeout(timeoutId);
-  });
-  elementClicked.addEventListener('mouseleave', () => {
-    clearTimeout(timeoutId);
-  });
-}
-/* end SCROLL BUTTONS */
-
 
 /**
  *STORY BOX CONTROLS
