@@ -88,6 +88,8 @@
     font-size: 45px;
     border: thin silver solid;
     margin: 5px 10px;
+    display: block;
+    visibility: visible;
   }
   .js-tabs {
     background: #eee;

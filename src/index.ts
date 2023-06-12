@@ -107,7 +107,7 @@ function makeStatsTab(selected: boolean, jsDom: {[key: string]: HTMLElement}): {
 
 function makeMapTab(selected: boolean, jsDom: {[key: string]: HTMLElement}): {[key: string]: HTMLElement} {
     // content for tab 2
-    const canvasElem: HTMLCanvasElement = tag('canvas', 'mapCanvas');
+    const canvasElem = tag('canvas', 'mapCanvas') as HTMLCanvasElement;
     canvasElem.setAttribute('width', '220');
     canvasElem.setAttribute('height', '300');
 
