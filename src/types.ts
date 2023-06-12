@@ -36,10 +36,12 @@ export interface PlayerState {
         health: number;
     },
     miniEvent: {
-        mainCharacter: Person['id'];
-        secondCharacter: Person['id'];
-        thirdCharacter: Person['id'];
-        locationList: Location['id'][];
+        mainCharacter: Employee | Passenger;
+        secondCharacter?: Employee | Passenger;
+        thirdCharacter?: Employee | Passenger;
+        locationList?: Location['id'][];
+        cost?: number;
+        reward?: number;
     },
     ship: string;
     passengers: Passenger[];

@@ -1,5 +1,30 @@
 import * as types from './types';
 
+export function jobTitleTransform(jobTitle: string | undefined) {
+    let fixedTitle = '';
+    switch (jobTitle) {
+        case 'navigator':
+            fixedTitle = 'navigator';
+            break;
+        case 'cargoMaster':
+            fixedTitle = 'cargo master';
+            break;
+        case 'doctor':
+            fixedTitle = 'doctor';
+            break;
+        case 'ai':
+            fixedTitle = 'AI';
+            break;
+        default:
+            fixedTitle =  'passenger';
+    }
+    return fixedTitle;
+}
+
+export function randomInt(min: number, max: number) {
+    return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
 // function to help nest html built in my js
 export function tag(tagType: string, classes: string, content?: string | HTMLElement | null): HTMLElement {
     const elem:HTMLElement = document.createElement(tagType);
