@@ -6,6 +6,7 @@ import {
     hasEnoughMoney,
     getItemTitle
 } from './utils';
+import { map } from './map';
 
 export const events = [
     {
@@ -231,7 +232,8 @@ export const events = [
             }
         ]
     },
-    {id: 'ambitiousNavigator',
+    {
+        id: 'ambitiousNavigator',
         title: 'An Ambitious Young Navigator',
         cost: 5000,
         getText: function (playerState: types.PlayerState) {
@@ -266,13 +268,11 @@ export const events = [
             },
             {
                 next: 'grouchyNavigator',
-                text:
-                    'Turn him down, try asking the experienced, older Dorothy instead.'
+                text: 'Turn him down, try asking the experienced, older Dorothy instead.'
             },
             {
                 next: 'crewHired',
-                text:
-                    'Decide to spend your money on a different crew position, or none at all.'
+                text: 'Decide to spend your money on a different crew position, or none at all.'
             }
         ]
     },
@@ -284,18 +284,15 @@ export const events = [
         choices: [
             {
                 next: 'badCargoMaster',
-                text:
-                    'Ask Alice to join you.'
+                text: 'Ask Alice to join you.'
             },
             {
                 next: 'goodCargoMaster',
-                text:
-                    'Offer a position to Adamm.'
+                text: 'Offer a position to Adamm.'
             },
             {
                 next: 'crewHired',
-                text:
-                    'Decide to spend your money on a different crewmember.'
+                text: 'Decide to spend your money on a different crewmember.'
             }
         ]
     },
@@ -344,7 +341,8 @@ export const events = [
             }
         ]
     },
-    {id: 'goodCargoMaster',
+    {
+        id: 'goodCargoMaster',
         title: 'A Creepy Cargo Master',
         cost: 12000,
         getText: function (playerState: types.PlayerState) {
@@ -389,7 +387,8 @@ export const events = [
             }
         ]
     },
-    { id: 'hireDoctor',
+    {
+        id: 'hireDoctor',
         title: 'A Venomous Doctor',
         cost: 700,
         getText: function (playerState: types.PlayerState) {
@@ -429,6 +428,24 @@ export const events = [
             }
         ]
     },
+    {
+        id: 'arriveExcelsior',
+        title: 'Arriving in Excelsior Station',
+        getText: function (playerState: types.PlayerState) {
+            const text1 = 'You are back in the remote Excelsior Station. You already look forward to leaving.';
+            return `<p>${text1}</p>`;
+        },
+        choices: [
+            {
+                next: 'marketEuropa',
+                getText: function (playerState: types.PlayerState) {
+                    //this returns markup and text
+                    const text1 = 'You might as well check what you can buy and sell before you get underway.';
+                    return `<p>${text1}</p>`;
+                },
+            }
+        ]
+    },
     {id: 'marketExcelsior',
         title: 'To market, to market...',
         getText: function(playerState: types.PlayerState){
@@ -454,10 +471,10 @@ export const events = [
             }
         ]
     },
-    {id: 'maidenVoyage',
+    {
+        id: 'maidenVoyage',
         title: 'Your Maiden Voyage',
         getText: function (playerState: types.PlayerState) {
-            //this returns markup and text
             const text1 = 'You head out from port, a captain on your maiden trip.';
             const text2 = 'Bon voyage!';
             return `<p>${text1}</p><p>${text2}</p>`;
@@ -470,18 +487,14 @@ export const events = [
                     const text1 = 'You arrive safely at Haliax Station.';
                     return `<p>${text1}</p>`;
                 },
-                /*
-                isActionValid: function (playerState: types.PlayerState) {
-                    //this will return a boolean value
-                },
-                performAction: function (playerState: types.PlayerState) {
-                    //this changes playerState somehow
+                performAction: function (p: types.PlayerState) {
+                    p.currentLocationId = 'haliax';
                 }
-                */
             }
         ]
     },
-    {id: 'arriveHaliax',
+    {
+        id: 'arriveHaliax',
         title: 'Arriving in Haliax Station',
         getText: function (playerState: types.PlayerState) {
             //this returns markup and text
@@ -496,14 +509,6 @@ export const events = [
                     const text1 = 'Go make a killing by selling luxury goods! Or at least check the markets with an eye toward the future.';
                     return `<p>${text1}</p>`;
                 },
-                /*
-                isActionValid: function (playerState: types.PlayerState) {
-                    //this will return a boolean value
-                },
-                performAction: function (playerState: types.PlayerState) {
-                    //this changes playerState somehow
-                }
-                */
             },
             {
                 next: 'nonexistentEvent',
@@ -512,18 +517,11 @@ export const events = [
                     const text1 = 'Click here to fall into a black hole.';
                     return `<p>${text1}</p>`;
                 },
-                /*
-                isActionValid: function (playerState: types.PlayerState) {
-                    //this will return a boolean value
-                },
-                performAction: function (playerState: types.PlayerState) {
-                    //this changes playerState somehow
-                }
-                */
             }
         ]
     },
-    {id: 'marketHaliax',
+    {
+        id: 'marketHaliax',
         title: 'To market, to market...',
         getText: function(playerState: types.PlayerState){
             var text1 = 'You scroll through the market listings, looking at what is best to buy and sell here.';
@@ -543,27 +541,41 @@ export const events = [
         },
         choices: [
             {
-                next: 'arriveEuropa',
+                next: 'arriveExcelsior',
                 getText: function (playerState: types.PlayerState) {
-                    //this returns markup and text
-                    const text1 = 'You leave Haliax Station, heading to Europa Station in the Echidna Prime system.';
+                    const text1 = 'You leave Haliax Station, heading to <b>Excelsior Station</b> in the Ganymede Prime system.';
                     return `<p>${text1}</p>`;
                 },
-                /*
-                isActionValid: function (playerState: types.PlayerState) {
-                    //this will return a boolean value
-                },
-                performAction: function (playerState: types.PlayerState) {
-                    //this changes playerState somehow
+                performAction: function (p: types.PlayerState) {
+                    p.currentLocationId = 'excelsior';
                 }
-                */
+            },
+            {
+                next: 'arriveEuropa',
+                getText: function (playerState: types.PlayerState) {
+                    const text1 = 'You leave Haliax Station, heading to <b>Europa Station</b> in the Echidna Prime system.';
+                    return `<p>${text1}</p>`;
+                },
+                performAction: function (p: types.PlayerState) {
+                    p.currentLocationId = 'europa';
+                }
+            },
+            {
+                next: 'arriveDrone',
+                getText: function (playerState: types.PlayerState) {
+                    const text1 = 'You leave Haliax Station, heading to <b>Drone Station</b> in the Eldrazi Minor system.';
+                    return `<p>${text1}</p>`;
+                },
+                performAction: function (p: types.PlayerState) {
+                    p.currentLocationId = 'drone';
+                }
             }
         ]
     },
-    {id: 'arriveEuropa',
+    {
+        id: 'arriveEuropa',
         title: 'Arriving in Europa Station',
         getText: function (playerState: types.PlayerState) {
-            //this returns markup and text
             const text1 = 'This station has no planet nearby, but it has made the most of it\'s human resources. After a windfall investment in medical technology from a bank tycoon who fell in love with a stationer, the station became one of the best pharmaceutical producers on this trade route.';
             return `<p>${text1}</p>`;
         },
@@ -575,20 +587,13 @@ export const events = [
                     const text1 = 'Go make a killing by selling medical goods! Or at least check the markets with an eye towards the future.';
                     return `<p>${text1}</p>`;
                 },
-                /*
-                isActionValid: function (playerState: types.PlayerState) {
-                    //this will return a boolean value
-                },
-                performAction: function (playerState: types.PlayerState) {
-                    //this changes playerState somehow
-                }
-                */
             }
         ]
     },
-    {id: 'marketEuropa',
+    {
+        id: 'marketEuropa',
         title: 'To market, to market...',
-        getText: function(playerState: types.PlayerState){
+        getText: function(playerState: types.PlayerState) {
             const text1 = 'You scroll through the market listings, looking at what is best to buy and sell here.';
             const text2 = 'The listings are kept in the "Map" section of your display.';
             return `<p>${text1}</p><p>${text2}</p>`;
@@ -604,6 +609,89 @@ export const events = [
                 ...this.choices
             ];
         },
-        choices: []
+        choices: [
+            {
+                next: 'arriveHaliax',
+                getText: function (playerState: types.PlayerState) {
+                    const text1 = 'You leave Haliax Station, heading to Haliax Station in the Echidna Prime system.';
+                    return `<p>${text1}</p>`;
+                },
+                performAction: function (p: types.PlayerState) {
+                    p.currentLocationId = 'haliax';
+                }
+            },
+            {
+                next: 'arriveDrone',
+                getText: function (playerState: types.PlayerState) {
+                    const text1 = 'You leave Haliax Station, heading to Drone Station in the Eldrazi Minor system.';
+                    return `<p>${text1}</p>`;
+                },
+                performAction: function (p: types.PlayerState) {
+                    p.currentLocationId = 'drone';
+                }
+            }
+        ]
+
+    },
+    {
+        id: 'arriveDrone',
+        title: 'Arriving in Drone Station',
+        getText: function (playerState: types.PlayerState) {
+            const text1 = 'The neighboring planet looms over the station, casting a gloom across every resident\'s face. Not literally, the planet is far enough away from the station that it is easy to ignore out the windows. But just knowing that the monsters of Eldrazi are in the same star system brings everyone\'s spirits down.';
+            return `<p>${text1}</p>`;
+        },
+        choices: [
+            {
+                next: 'marketDrone',
+                getText: function (playerState: types.PlayerState) {
+                    //this returns markup and text
+                    const text1 = 'Go buy and sell goods.';
+                    return `<p>${text1}</p>`;
+                },
+            }
+        ]
+    },
+    {
+        id: 'marketDrone',
+        title: 'To market, to market...',
+        getText: function(playerState: types.PlayerState){
+            const text1 = 'You scroll through the market listings, looking at what is best to buy and sell here.';
+            const text2 = 'The listings are kept in the "Map" section of your display.';
+            return `<p>${text1}</p><p>${text2}</p>`;
+        },
+        createChoices: function(playerState: types.PlayerState) {
+            this.choices = [
+                ...makePurchaseChoices(
+                    'marketDrone',
+                    {food: map.find(station => station.id === 'drone').items.food.cost , medicine: 25, luxury: 3, shipSupplies: 15},
+                    {food: 23, medicine: 24, luxury: 2, shipSupplies: 15},
+                    makeSellChoice, makeBuyChoice, playerState, hasEnoughMoney, getItemTitle
+                ),
+                ...this.choices
+            ];
+        },
+
+        choices: [
+            {
+                next: 'arriveHaliax',
+                getText: function (playerState: types.PlayerState) {
+                    const text1 = 'You leave Drone Station, heading to Haliax Station in the Echidna Prime system.';
+                    return `<p>${text1}</p>`;
+                },
+                performAction: function (p: types.PlayerState) {
+                    p.currentLocationId = 'haliax';
+                }
+            },
+            {
+                next: 'arriveEuropa',
+                getText: function (playerState: types.PlayerState) {
+                    const text1 = 'You leave Drone Station, heading to Europa Station in the Eldrazi Minor system.';
+                    return `<p>${text1}</p>`;
+                },
+                performAction: function (p: types.PlayerState) {
+                    p.currentLocationId = 'europa';
+                }
+            }
+        ]
     },
 ];

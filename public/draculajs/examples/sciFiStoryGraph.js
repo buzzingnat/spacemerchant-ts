@@ -77,7 +77,6 @@ function displayGraph() {
     	}
     	// Find and style events that have no next event among choices.
     	for (var i = 0; i < storyEvent.choices.length; i++){
-            console.log();
     	    if (storyEvent.choices[i].next) {
         		hasNext = true;
         		break;

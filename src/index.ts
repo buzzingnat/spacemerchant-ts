@@ -1,6 +1,7 @@
 import * as types from './types';
 import { tag, buildIcon, calculateHoldMax } from './utils';
 import { events } from './events';
+import { crewDebtStory } from './story-crewDebt';
 import { map } from './map';
 
 const COL_BLUE = 'cornflowerblue';
@@ -16,12 +17,7 @@ const playerState: types.PlayerState = {
   coins: 100000,
   cargo: [],
   shipStats: {holdMax: 0, health: 0, speed: 0},
-  miniEvent: {
-      mainCharacter: '',
-      secondCharacter: '',
-      thirdCharacter: '',
-      locationList: []
-  },
+  miniEvent: {},
   ship: '',
   passengers: [],
   crew: [],
@@ -34,8 +30,9 @@ const playerState: types.PlayerState = {
 /**
  *GLOBAL OBJECTS
  **/
+const storyEvents = [...events, ...crewDebtStory];
 // @ts-ignore
-window.storyEvents = events;
+window.storyEvents = storyEvents;
 // @ts-ignore
 window.playerState = playerState;
 /* end GLOBAL OBJECTS */
@@ -105,20 +102,11 @@ function makeStatsTab(selected: boolean, jsDom: {[key: string]: HTMLElement}): {
     return {tabContentElem};
 }
 
-function makeMapTab(selected: boolean, jsDom: {[key: string]: HTMLElement}): {[key: string]: HTMLElement} {
-    // content for tab 2
-    const canvasElem = tag('canvas', 'mapCanvas') as HTMLCanvasElement;
-    canvasElem.setAttribute('width', '220');
-    canvasElem.setAttribute('height', '300');
-
-    // START MAP DRAWING
-    const canvas = canvasElem;
+function drawMapCanvas(canvas: HTMLCanvasElement, playerState: types.PlayerState) {
     const context = canvas.getContext("2d");
 
     context.fillStyle = "black";
     context.fillRect(0, 0, canvas.width, canvas.height);
-
-    //const stationList = [{x: 50, y: 50, name: 'excelsior', connect: ['tau', 'gamma']}, {x: 150, y: 50, name: 'tau', connect: ['excelsior']}, {x: 100, y: 200, name: 'gamma', connect: []}];
 
     for (const station of map) {
         context.fillStyle = "aliceblue";
@@ -126,11 +114,14 @@ function makeMapTab(selected: boolean, jsDom: {[key: string]: HTMLElement}): {[k
         context.arc(station.x, station.y, 15, 0, 180);
         context.fill();
 
-        const fontSize = 18;
-        context.font = `${fontSize}px sans-serif`;
-        context.textAlign = "center";
-        context.fillStyle = "aqua";
-        context.fillText(station.id, station.x, station.y-fontSize*1.5);
+        // add green dot to current location
+        if (station.id === playerState.currentLocationId) {
+            context.fillStyle = "green";
+            context.beginPath();
+            context.arc(station.x, station.y, 7, 0, 180);
+            context.fill();
+        }
+
         for (const id of station.connects) {
             // station is source, destination is target.
             const destination = map.find(dest => dest.id === id);
@@ -162,8 +153,25 @@ function makeMapTab(selected: boolean, jsDom: {[key: string]: HTMLElement}): {[k
             context.lineTo(destination.x - d * nx, destination.y - d * ny);
             context.fill();
         }
+        context.beginPath();
+        const fontSize = 16;
+        context.font = `${fontSize}px sans-serif`;
+        context.textAlign = "center";
+        context.fillStyle = "aqua";
+        context.strokeStyle = "black";
+        context.lineWidth = .75;
+        context.fillText(station.id, station.x, station.y-fontSize*1.15);
+        context.strokeText(station.id, station.x, station.y-fontSize*1.15);
     }
-    // END MAP DRAWING
+}
+
+function makeMapTab(selected: boolean, jsDom: {[key: string]: HTMLElement}): {[key: string]: HTMLElement} {
+    // content for tab 2
+    const canvasElem = tag('canvas', 'mapCanvas') as HTMLCanvasElement;
+    canvasElem.setAttribute('width', '220');
+    canvasElem.setAttribute('height', '400');
+
+    drawMapCanvas(canvasElem, playerState);
 
     const accordionWrapperElem: HTMLElement = tag('div', 'accordionWrapper');
     const tabContentElem = tag('div', `js-tabContent tabContent tabContent2 ${selected ? 'selected' : ''}`);
@@ -326,7 +334,7 @@ if (typeof window !== "object") {
                 initGame(
                     playerState,
                     scrollBoxElem,
-                    events.find(obj => obj.id === 'firstEvent') as types.StoryEvent
+                    storyEvents.find(obj => obj.id === 'firstEvent') as types.StoryEvent
                 );
             }
         }, 50);
@@ -415,10 +423,11 @@ function displayAccordionLocation(location: types.Location, accordionWrapperElem
     const panelElem = tag('div', 'panel')
     panelElem.appendChild(tag('p', '', location.description))
     panelElem.append(itemListElem);
-    location.items.forEach((obj) => {
-        const item = tag('li', 'item', obj.name + ': ' + obj.quantity);
+    for (const prop in location.items) {
+        const items = location.items;
+        const item = tag('li', 'item', prop + ': $' + items[prop].cost);
         itemListElem.append(item);
-    });
+    }
     itemWrapperElem.appendChild(buttonElem)
     itemWrapperElem.appendChild(panelElem);
     accordionWrapperElem.append(itemWrapperElem);
@@ -445,7 +454,8 @@ function displayEvent(
     const scrollBoxElem = jsDom.scrollBoxElem;
     scrollBoxElem.innerHTML = '';
     const eventWrapperElem: HTMLElement = tag('div', 'storyContentWrapper');
-    eventWrapperElem.dataset.storyEvent = 'storyEvent', JSON.stringify(storyEvent);
+    // eventWrapperElem.dataset.storyEvent = 'storyEvent', JSON.stringify(storyEvent);
+    drawMapCanvas(jsDom.mapCanvas as HTMLCanvasElement, playerState);
     scrollBoxElem.appendChild(eventWrapperElem);
     const eventText = storyEvent.getText ?
         storyEvent.getText(playerState) : storyEvent.text ?
@@ -460,12 +470,19 @@ function displayEvent(
     const choicesWrapperElem: HTMLElement = tag('div', 'choicesWrapper');
     eventWrapperElem.appendChild(choicesWrapperElem);
     if (storyEvent.createChoices !== undefined) {
-        console.log('before createChoices', storyEvent.choices.length);
         storyEvent.createChoices(playerState);
-        console.log('after createChoices', storyEvent.choices.length);
     }
-    for (let i = 0; i < storyEvent.choices.length; i++) {
-        const choice = storyEvent.choices[i];
+    const choiceList = [...storyEvent.choices];
+    if (Math.floor(Math.random()*10) > 5 && (playerState.crew.length > 0 || playerState.passengers.length > 0)) {
+        choiceList.push({
+            next: 'crewDebtA',
+            getText: (playerState) => {
+                return 'Oh no! Someone runs up to you panicking!'
+            }
+        });
+    }
+    for (let i = 0; i < choiceList.length; i++) {
+        const choice = choiceList[i];
         const choiceElem: HTMLElement = tag('div', 'choice');
         const text = choice.getText ?
             choice.getText(playerState) : choice.text ?
@@ -478,11 +495,11 @@ function displayEvent(
         if (choice.isActionValid && choice.isActionValid(playerState) === false) {
             choiceElem.classList.add('class', 'notValid');
         }
-        if (choice.next && !events.find(obj => obj.id === choice.next)) {
+        if (choice.next && !storyEvents.find(obj => obj.id === choice.next)) {
             choiceElem.classList.add('class', 'notValid');
         }
         choiceElem.addEventListener("click", (event) => {
-            if (choice.next && !events.find(obj => obj.id === choice.next)) {
+            if (choice.next && !storyEvents.find(obj => obj.id === choice.next)) {
                 return;
             }
             if (choice.isActionValid && !choice.isActionValid(playerState)) {
@@ -499,7 +516,7 @@ function displayEvent(
                 updateCoinsElem(jsDom.coinsElem, playerState);
                 updateCrewList(jsDom.crewInnerWrapperElem, playerState);
             }
-            const nextEvent = events.find(obj => obj.id === choice.next) as types.StoryEvent;
+            const nextEvent = storyEvents.find(obj => obj.id === choice.next) as types.StoryEvent;
             displayEvent(nextEvent, playerState, jsDom);
         });
         choicesWrapperElem.appendChild(choiceElem);

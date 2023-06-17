@@ -22,7 +22,14 @@ export interface Location {
     id: string;
     title: string;
     description: string;
-    items: {name: string; quantity: number;}[];
+    x: number;
+    y: number;
+    connects: string[];
+    items: {
+        food: {quantity: number; cost: number;},
+        medicine: {quantity: number; cost: number;},
+        luxury: {quantity: number; cost: number;}
+    }
 }
 
 export type Cargo = 'luxury' | 'food' | 'medicine' | 'shipSupplies';
@@ -36,7 +43,7 @@ export interface PlayerState {
         health: number;
     },
     miniEvent: {
-        mainCharacter: Employee | Passenger;
+        mainCharacter?: Employee | Passenger;
         secondCharacter?: Employee | Passenger;
         thirdCharacter?: Employee | Passenger;
         locationList?: Location['id'][];
