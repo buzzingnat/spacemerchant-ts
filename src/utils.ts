@@ -95,7 +95,6 @@ export function makeSellChoice(
     getItemTitle: (itemType: Cargo) => "High Density Foodstuffs" | "Medicine" | "Luxury Items" | "Food and Repair Supplies"
 ): StoryChoice {
     const itemTitle = getItemTitle(itemType);
-    console.log(itemType);
     return {
         next,
         cost,
@@ -105,7 +104,6 @@ export function makeSellChoice(
                 + playerState.cargo.filter(s => s === itemType).length + ' units.)';
         },
         isActionValid: function (playerState: PlayerState) {
-            console.log({isValidSell: playerState.cargo.indexOf(itemType)}, itemType);
             return playerState.cargo.indexOf(itemType) > -1;
         },
         performAction: function (playerState: PlayerState) {
@@ -141,7 +139,6 @@ export function makeBuyChoice(
         performAction: function (playerState: PlayerState) {
             playerState.coins -= cost;
             playerState.cargo.push(itemType);
-            console.log('add to cargo:', itemType);
         }
     };
 }

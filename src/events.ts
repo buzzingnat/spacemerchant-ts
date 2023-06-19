@@ -5,7 +5,6 @@ import {
     hasEnoughMoney,
     getItemTitle
 } from './utils';
-import { map } from './map';
 
 export const events = [
     {
@@ -452,18 +451,17 @@ export const events = [
             return `<p>${text1}</p><p>${text2}</p>`;
         },
         createChoices: function(playerState: PlayerState) {
-            this.choices = [
-                ...makePurchaseChoices(
-                    'marketExcelsior',
-                    {food: 15, medicine: 15, luxury: 30, shipSupplies: 10},
-                    {food: 13, medicine: 14, luxury: 28, shipSupplies: 10},
-                    makeSellChoice, makeBuyChoice, playerState, hasEnoughMoney, getItemTitle
-                ),
-                {
-                    next: 'arriveHaliax',
-                    text: 'Leave for <b>Haliax Station</b>.'
-                }
-            ];
+            if (this.choices.findIndex((c) => c.getText(playerState).includes('coins per unit.')) <= -1) {
+                this.choices = [
+                    ...makePurchaseChoices(
+                        'marketHaliax',
+                        {food: 5, medicine: 5, luxury: 10, shipSupplies: 5},
+                        {food: 3, medicine: 4, luxury: 8, shipSupplies: 5},
+                        makeSellChoice, makeBuyChoice, playerState, hasEnoughMoney, getItemTitle
+                    ),
+                    ...this.choices
+                ];
+            }
         },
         choices: [
             {
@@ -480,20 +478,19 @@ export const events = [
             return `<p>${text1}</p><p>${text2}</p>`;
         },
         createChoices: function(playerState: PlayerState) {
-            this.choices = [
-                ...makePurchaseChoices(
-                    'marketExcelsiorBeginning',
-                    {food: 15, medicine: 15, luxury: 30, shipSupplies: 10},
-                    {food: 13, medicine: 14, luxury: 28, shipSupplies: 10},
-                    makeSellChoice, makeBuyChoice, playerState, hasEnoughMoney, getItemTitle
-                ),
-                {
-                    next: 'maidenVoyage',
-                    text: 'You finish stocking up and settle in for a long ride to Haliax Station in the Ganymede Prime system, your next port. You\'re headed home to your family. It\'s been almost a year since you last saw them.'
-                }
-            ];
+            if (this.choices.findIndex((c) => c.getText(playerState).includes('coins per unit.')) <= -1) {
+                this.choices = [
+                    ...makePurchaseChoices(
+                        'marketHaliax',
+                        {food: 5, medicine: 5, luxury: 10, shipSupplies: 5},
+                        {food: 3, medicine: 4, luxury: 8, shipSupplies: 5},
+                        makeSellChoice, makeBuyChoice, playerState, hasEnoughMoney, getItemTitle
+                    ),
+                    ...this.choices
+                ];
+            }
         },
-        choices: [{next: 'maidenVoyage', text: 'See createChoices for actual text.'}]
+        choices: [{next: 'maidenVoyage', text: 'You finish stocking up and settle in for a long ride to Haliax Station in the Ganymede Prime system, your next port. You\'re headed home to your family. It\'s been almost a year since you last saw them.'}]
     },
     {
         id: 'maidenVoyage',
@@ -559,18 +556,17 @@ export const events = [
             return `<p>${text1}</p><p>${text2}</p>`;
         },
         createChoices: function(playerState: PlayerState) {
-            if (this.choices.findIndex(c => c.getText().includes('coins per unit.')) > -1) {
-                return undefined;
+            if (this.choices.findIndex((c) => c.getText(playerState).includes('coins per unit.')) <= -1) {
+                this.choices = [
+                    ...makePurchaseChoices(
+                        'marketHaliax',
+                        {food: 5, medicine: 5, luxury: 10, shipSupplies: 5},
+                        {food: 3, medicine: 4, luxury: 8, shipSupplies: 5},
+                        makeSellChoice, makeBuyChoice, playerState, hasEnoughMoney, getItemTitle
+                    ),
+                    ...this.choices
+                ];
             }
-            this.choices = [
-                ...makePurchaseChoices(
-                    'marketHaliax',
-                    {food: 5, medicine: 5, luxury: 10, shipSupplies: 5},
-                    {food: 3, medicine: 4, luxury: 8, shipSupplies: 5},
-                    makeSellChoice, makeBuyChoice, playerState, hasEnoughMoney, getItemTitle
-                ),
-                ...this.choices
-            ];
         },
         choices: [
             {
@@ -631,15 +627,17 @@ export const events = [
             return `<p>${text1}</p><p>${text2}</p>`;
         },
         createChoices: function(playerState: PlayerState) {
-            this.choices = [
-                ...makePurchaseChoices(
-                    'marketEuropa',
-                    {food: 25, medicine: 25, luxury: 3, shipSupplies: 15},
-                    {food: 23, medicine: 24, luxury: 2, shipSupplies: 15},
-                    makeSellChoice, makeBuyChoice, playerState, hasEnoughMoney, getItemTitle
-                ),
-                ...this.choices
-            ];
+            if (this.choices.findIndex((c) => c.getText(playerState).includes('coins per unit.')) <= -1) {
+                this.choices = [
+                    ...makePurchaseChoices(
+                        'marketHaliax',
+                        {food: 5, medicine: 5, luxury: 10, shipSupplies: 5},
+                        {food: 3, medicine: 4, luxury: 8, shipSupplies: 5},
+                        makeSellChoice, makeBuyChoice, playerState, hasEnoughMoney, getItemTitle
+                    ),
+                    ...this.choices
+                ];
+            }
         },
         choices: [
             {
@@ -691,17 +689,18 @@ export const events = [
             return `<p>${text1}</p><p>${text2}</p>`;
         },
         createChoices: function(playerState: PlayerState) {
-            this.choices = [
-                ...makePurchaseChoices(
-                    'marketDrone',
-                    {food: map.find(station => station.id === 'drone').items.food.cost , medicine: 25, luxury: 3, shipSupplies: 15},
-                    {food: 23, medicine: 24, luxury: 2, shipSupplies: 15},
-                    makeSellChoice, makeBuyChoice, playerState, hasEnoughMoney, getItemTitle
-                ),
-                ...this.choices
-            ];
+            if (this.choices.findIndex((c) => c.getText(playerState).includes('coins per unit.')) <= -1) {
+                this.choices = [
+                    ...makePurchaseChoices(
+                        'marketHaliax',
+                        {food: 5, medicine: 5, luxury: 10, shipSupplies: 5},
+                        {food: 3, medicine: 4, luxury: 8, shipSupplies: 5},
+                        makeSellChoice, makeBuyChoice, playerState, hasEnoughMoney, getItemTitle
+                    ),
+                    ...this.choices
+                ];
+            }
         },
-
         choices: [
             {
                 next: 'arriveHaliax',
