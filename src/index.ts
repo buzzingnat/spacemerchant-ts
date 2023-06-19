@@ -1,4 +1,3 @@
-import * as types from './types';
 import { tag, buildIcon, calculateHoldMax } from './utils';
 import { events } from './events';
 import { crewDebtStory } from './story-crewDebt';
@@ -13,7 +12,7 @@ const COL_DKGRAY = 'gray';
 /**
  *PLAYER STATE
  **/
-const playerState: types.PlayerState = {
+const playerState: PlayerState = {
   coins: 100000,
   cargo: [],
   shipStats: {holdMax: 0, health: 0, speed: 0},
@@ -102,7 +101,7 @@ function makeStatsTab(selected: boolean, jsDom: {[key: string]: HTMLElement}): {
     return {tabContentElem};
 }
 
-function drawMapCanvas(canvas: HTMLCanvasElement, playerState: types.PlayerState) {
+function drawMapCanvas(canvas: HTMLCanvasElement, playerState: PlayerState) {
     const context = canvas.getContext("2d");
 
     context.fillStyle = "black";
@@ -218,10 +217,10 @@ function makeItemTab(selected: boolean, jsDom: {[key: string]: HTMLElement}): {[
     jsDom.crewTitleElem = crewTitleElem;
     return {coinsElem, tabContentElem, crewWrapperElem, crewInnerWrapperElem, crewTitleElem};
 }
-function updateCoinsElem(coinsElem: HTMLElement, playerState: types.PlayerState): void {
+function updateCoinsElem(coinsElem: HTMLElement, playerState: PlayerState): void {
     coinsElem.innerText = `Coins: ${playerState.coins}`;
 }
-function updateCrewList(crewInnerWrapperElem: HTMLElement, playerState: types.PlayerState): void {
+function updateCrewList(crewInnerWrapperElem: HTMLElement, playerState: PlayerState): void {
     crewInnerWrapperElem.innerHTML = '';
     const crewList = [];
     if (playerState.crew.length < 1) {
@@ -334,7 +333,7 @@ if (typeof window !== "object") {
                 initGame(
                     playerState,
                     scrollBoxElem,
-                    storyEvents.find(obj => obj.id === 'firstEvent') as types.StoryEvent
+                    storyEvents.find(obj => obj.id === 'firstEvent') as StoryEvent
                 );
             }
         }, 50);
@@ -342,7 +341,7 @@ if (typeof window !== "object") {
     };
 }
 
-function initGame(playerState: types.PlayerState, scrollBoxElem: HTMLElement, firstEvent: types.StoryEvent) {
+function initGame(playerState: PlayerState, scrollBoxElem: HTMLElement, firstEvent: StoryEvent) {
     displayEvent(
         firstEvent,
         playerState,
@@ -369,7 +368,6 @@ function showGraph() {
     jsDom.iframeWrapperElem.style.visibility = 'visible';
     jsDom.iframeWrapperElem.style.display = 'block';
     jsDom.iframeWrapperElem.style.height = '81vh';
-    jsDom.iframeWrapperElem.style.overflow = 'hidden';
 }
 function hideGraph() {
     if (!document) {
@@ -380,7 +378,6 @@ function hideGraph() {
     jsDom.iframeWrapperElem.style.visibility = 'hidden';
     jsDom.iframeWrapperElem.style.display = 'none';
     jsDom.iframeWrapperElem.style.height = '0';
-    jsDom.iframeWrapperElem.style.overflow = 'auto';
 }
 /* end TOGGLE EVENT GRAPH VISIBILITY */
 
@@ -410,7 +407,7 @@ function updateMeasureBar(bar: HTMLElement, barNum: HTMLElement, currentValue: n
  *STATS BOX CONTROLS
  **/
 
-function displayAccordionLocation(location: types.Location, accordionWrapperElem: HTMLElement){
+function displayAccordionLocation(location: MapLocation, accordionWrapperElem: HTMLElement){
     const itemWrapperElem: HTMLElement = tag('div', 'accordionItemWrapper');
     const buttonElem = tag('button', 'accordion', location.title);
     buttonElem.addEventListener('click', (event) => {
@@ -447,8 +444,8 @@ function displayAccordionLocation(location: types.Location, accordionWrapperElem
 
 //MAKE AN EVENT APPEAR ON THE SCREEN
 function displayEvent(
-    storyEvent: types.StoryEvent,
-    playerState: types.PlayerState,
+    storyEvent: StoryEvent,
+    playerState: PlayerState,
     jsDom: {[key: string]: HTMLElement}
     ) {
     const scrollBoxElem = jsDom.scrollBoxElem;
@@ -516,7 +513,7 @@ function displayEvent(
                 updateCoinsElem(jsDom.coinsElem, playerState);
                 updateCrewList(jsDom.crewInnerWrapperElem, playerState);
             }
-            const nextEvent = storyEvents.find(obj => obj.id === choice.next) as types.StoryEvent;
+            const nextEvent = storyEvents.find(obj => obj.id === choice.next) as StoryEvent;
             displayEvent(nextEvent, playerState, jsDom);
         });
         choicesWrapperElem.appendChild(choiceElem);

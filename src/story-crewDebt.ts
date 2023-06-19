@@ -1,4 +1,3 @@
-import * as types from './types';
 import { map } from './map';
 import { randomInt, jobTitleTransform } from './utils';
 
@@ -6,7 +5,7 @@ export const crewDebtStory = [
     {
         id: 'crewDebtA',
         title: 'A debt comes due!',
-        getText: function (p: types.PlayerState) {
+        getText: function (p: PlayerState) {
             // set characters, event path, cost, reward here
             const characterList = [...p.crew, ...p.passengers];
             const newMainCharacter = characterList.splice(randomInt(0, characterList.length-1))[0];
@@ -27,7 +26,7 @@ export const crewDebtStory = [
         choices: [
             {
                 next: 'crewDebtB',
-                getText: function (p: types.PlayerState) {
+                getText: function (p: PlayerState) {
                     const mainCharacter = p.miniEvent.mainCharacter;
                     const locationList = p.miniEvent.locationList;
                     const lastLocationId = locationList[locationList.length-1];
@@ -39,12 +38,12 @@ export const crewDebtStory = [
                     console.log({locationList, currentLocationId: p.currentLocationId, nextLocationId, lastLocationId});
                     return `Hurry towards ${lastLocation.title} via ${nextLocation.title} to meet with a friend who can help ${mainCharacter.name} out of their sticky situation.`
                 },
-                isActionValid: function (p: types.PlayerState) {
+                isActionValid: function (p: PlayerState) {
                     const locationList = p.miniEvent.locationList;
                     const lastLocationId = locationList[locationList.length-1];
                     return lastLocationId !== p.currentLocationId;
                 },
-                performAction: function (p: types.PlayerState) {
+                performAction: function (p: PlayerState) {
                     const nextLocationId = p.miniEvent.locationList[
                         p.miniEvent.locationList.findIndex(id => id === p.currentLocationId) + 1
                     ];
@@ -53,14 +52,14 @@ export const crewDebtStory = [
             },
             {
                 next: 'crewDebtC',
-                getText: function (playerState: types.PlayerState) {
+                getText: function (playerState: PlayerState) {
                     const text = 'Pay the thugs off.';
                         return text;
                 },
-                isActionValid: function (playerState: types.PlayerState) {
+                isActionValid: function (playerState: PlayerState) {
                     return playerState.coins >= playerState.miniEvent.cost;
                 },
-                performAction: function (playerState: types.PlayerState) {
+                performAction: function (playerState: PlayerState) {
                     playerState.coins -= playerState.miniEvent.cost;
                 }
 
@@ -70,14 +69,14 @@ export const crewDebtStory = [
     {
         id: 'crewDebtB',
         title: 'Racing to a friend!',
-        getText: function (p: types.PlayerState) {
+        getText: function (p: PlayerState) {
             const keepGoing = `There is no time to waste! Keep going!`
             return keepGoing;
         },
         choices: [
             {
                 next: 'crewDebtB',
-                getText: function (p: types.PlayerState) {
+                getText: function (p: PlayerState) {
                     const mainCharacter = p.miniEvent.mainCharacter;
                     const locationList = p.miniEvent.locationList;
                     const lastLocationId = locationList[locationList.length-1];
@@ -94,14 +93,14 @@ export const crewDebtStory = [
                     }
                     return goNextLocation;
                 },
-                isActionValid: function (p: types.PlayerState) {
+                isActionValid: function (p: PlayerState) {
                     const locationList = p.miniEvent.locationList;
                     const nextLocationId = locationList[
                         locationList.findIndex(id => id === p.currentLocationId) + 1
                     ];
                     return locationList.includes(nextLocationId);
                 },
-                performAction: function (p: types.PlayerState) {
+                performAction: function (p: PlayerState) {
                     const nextLocationId = p.miniEvent.locationList[
                         p.miniEvent.locationList.findIndex(id => id === p.currentLocationId) + 1
                     ];
@@ -110,14 +109,14 @@ export const crewDebtStory = [
             },
             {
                 next: 'crewDebtC',
-                getText: function (playerState: types.PlayerState) {
+                getText: function (playerState: PlayerState) {
                     const text = 'Pay the thugs off.';
                         return text;
                 },
-                isActionValid: function (playerState: types.PlayerState) {
+                isActionValid: function (playerState: PlayerState) {
                     return playerState.coins >= playerState.miniEvent.cost;
                 },
-                performAction: function (playerState: types.PlayerState) {
+                performAction: function (playerState: PlayerState) {
                     playerState.coins -= playerState.miniEvent.cost;
                 }
 
@@ -127,10 +126,10 @@ export const crewDebtStory = [
     {
         id: 'crewDebtC',
         title: 'Pay the thugs off.',
-        getText: function (p: types.PlayerState) {
+        getText: function (p: PlayerState) {
             return `You had the money to make this problem go away. Thank goodness! Now back to your safer everyday life.`;
         },
-        createChoices: function(p: types.PlayerState) {
+        createChoices: function(p: PlayerState) {
             const locId = p.currentLocationId;
             const firstLetterCap = locId.charAt(0).toUpperCase();
             const restOfWord = locId.slice(1);
@@ -148,12 +147,12 @@ export const crewDebtStory = [
     {
         id: 'crewDebtD',
         title: 'A friend helps you out of a bind.',
-        getText: function (p: types.PlayerState) {
+        getText: function (p: PlayerState) {
             const mainCharacter = p.miniEvent.mainCharacter;
             const arrive = `You made it! You find ${mainCharacter.name}'s friend. They are disappionted to have to bail them out, but willing to give them one more chance.`;
             return arrive;
         },
-        createChoices: function(p: types.PlayerState) {
+        createChoices: function(p: PlayerState) {
             const locId = p.currentLocationId;
             const firstLetterCap = locId.charAt(0).toUpperCase();
             const restOfWord = locId.slice(1);

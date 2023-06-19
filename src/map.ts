@@ -1,6 +1,4 @@
-import  * as types from './types';
-
-export const map: types.Location[] = [
+export const map: MapLocation[] = [
     { id: 'excelsior',
         x: 60, y: 60,
         'title': 'Beta Thymine, Excelsior Station',
