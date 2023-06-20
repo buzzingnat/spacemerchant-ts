@@ -1,0 +1,64 @@
+# ./.github/workflows/build.yml
+
+name: build
+
+on:
+  # support calling this workflow from other workflows
+  # https://docs.github.com/en/actions/learn-github-actions/reusing-workflows#creating-a-reusable-workflow
+  workflow_call:
+  # support running this workflow on push events
+  # https://docs.github.com/en/actions/learn-github-actions/workflow-syntax-for-github-actions#onpushpull_requestbranchestags
+  push:
+    branches-ignore: main
+
+jobs:
+  build:
+    # https://docs.github.com/en/actions/learn-github-actions/workflow-syntax-for-github-actions#jobsjob_idruns-on
+    runs-on: ubuntu-latest
+
+    # https://docs.github.com/en/actions/learn-github-actions/workflow-syntax-for-github-actions#jobsjob_idsteps
+    steps:
+      # https://github.com/actions/checkout
+      - name: Checkout
+        # 2.4.0 was the latest at the time of writing
+        uses: actions/checkout@v2.4.0
+    
+      # a standard step for GitHub actions on Node
+      # https://github.com/actions/setup-node
+      - name: Set up node env
+        # 2.5.1 was the latest at the time of writing
+        uses: actions/setup-node@v2.5.1
+        with:
+          # specify the version appropriate to your project
+          # setup-node can also read the version from a Node version file. see the setup-node docs for details
+          node-version-file: '.nvmrc'
+          # cache installed dependencies for best performance. yarn and pnpm are also supported  
+          cache: npm
+
+      - name: Install dependencies
+        # For Node 16: https://docs.npmjs.com/cli/v8/commands/npm-ci
+        # for other Node versions, look up the npm version at https://nodejs.org/en/download/releases/
+        run: npm ci --prefer-offline --no-audit
+        
+      # lint steps, test steps, etc go here. adapt to your needs
+      - name: Lint
+        run: npm run lint
+
+      # build! adapt to your needs
+      - name: Generate
+        run: npm run generate
+
+      # upload the artifact for use in either CD
+      # here, the 'dist' directory is compressed and uploaded to GitHub asset storage as 'build-artifact'
+      - name: Upload artifact
+        # https://github.com/actions/upload-artifact
+        uses: actions/upload-artifact@v2
+        with:
+          # the name to save the compressed asset as
+          name: build-artifact
+          # the directory or file to upload. adapt to your needs
+          path: dist
+          # the artifact is only needed for the duration of the build-deploy workflow
+          # adapt to your needs
+          # https://github.com/actions/upload-artifact#retention-period
+          retention-days: 1
