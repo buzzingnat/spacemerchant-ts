@@ -41,12 +41,10 @@ jobs:
         run: npm ci --prefer-offline --no-audit
         
       # lint steps, test steps, etc go here. adapt to your needs
-      - name: Lint
-        run: npm run lint
 
       # build! adapt to your needs
       - name: Generate
-        run: npm run generate
+        run: npm run build
 
       # upload the artifact for use in either CD
       # here, the 'dist' directory is compressed and uploaded to GitHub asset storage as 'build-artifact'
