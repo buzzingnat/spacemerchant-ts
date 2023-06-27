@@ -40,6 +40,8 @@ window.playerState = playerState;
  *GLOBAL DOM ELEMENTS
  **/
 const jsDom: {[key: string]: HTMLElement} | undefined = {};
+// @ts-ignore
+window.jsDom = jsDom;
 
 function getMainGameElem() {
     if (!document) {
@@ -368,6 +370,8 @@ function showGraph() {
     jsDom.iframeWrapperElem.style.visibility = 'visible';
     jsDom.iframeWrapperElem.style.display = 'block';
     jsDom.iframeWrapperElem.style.height = '81vh';
+    const iframeElem = jsDom.iframeWrapperElem.firstElementChild as HTMLElement;
+    iframeElem.style.height = '100%';
 }
 function hideGraph() {
     if (!document) {
@@ -378,6 +382,8 @@ function hideGraph() {
     jsDom.iframeWrapperElem.style.visibility = 'hidden';
     jsDom.iframeWrapperElem.style.display = 'none';
     jsDom.iframeWrapperElem.style.height = '0';
+    const iframeElem = jsDom.iframeWrapperElem.firstElementChild as HTMLElement;
+    iframeElem.style.height = '0';
 }
 /* end TOGGLE EVENT GRAPH VISIBILITY */
 
