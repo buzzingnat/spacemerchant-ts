@@ -328,6 +328,7 @@ Graph Iframe Styling
 iframe {
     width: 800px;
     height: 81vh;
+    height: 0; /* hidden on initial page load */
     border: none;
 }
 .iframeWrapper {
