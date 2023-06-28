@@ -1,4 +1,4 @@
-import { tag, buildIcon, calculateHoldMax } from './utils';
+import { tag, buildIcon, calculateHoldMax, updateMeasureBar } from './utils';
 import { events } from './events';
 import { crewDebtStory } from './story-crewDebt';
 import { map } from './map';
@@ -392,16 +392,6 @@ function makeMeasureBar(className: string, label: string, primaryColor: string, 
     barWrapper.appendChild(bar);
     return {barWrapper, bar, barLabel, barNum};
 }
-function updateMeasureBar(bar: HTMLElement, barNum: HTMLElement, currentValue: number, maxValue: number){
-    if (!bar) {
-        return console.log('bar element not found');
-    }
-    const barWidth = bar.offsetWidth;
-    const borderWidth = Math.round((currentValue/maxValue)*barWidth);
-    bar.style.background = COL_DKGRAY;
-    bar.style.borderLeftWidth = borderWidth+'px';
-    barNum.innerText = currentValue + '/' + maxValue;
-}
 
 /**
  *STATS BOX CONTROLS
@@ -447,7 +437,7 @@ function displayEvent(
     storyEvent: StoryEvent,
     playerState: PlayerState,
     jsDom: {[key: string]: HTMLElement}
-    ) {
+    ): void {
     const scrollBoxElem = jsDom.scrollBoxElem;
     scrollBoxElem.innerHTML = '';
     const eventWrapperElem: HTMLElement = tag('div', 'storyContentWrapper');
@@ -480,6 +470,7 @@ function displayEvent(
     }
     for (let i = 0; i < choiceList.length; i++) {
         const choice = choiceList[i];
+        // choicesWrapperElem.appendChild(choice.getElement(playerState, choice));
         const choiceElem: HTMLElement = tag('div', 'choice');
         const text = choice.getText ?
             choice.getText(playerState) : choice.text ?

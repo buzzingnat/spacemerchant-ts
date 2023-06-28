@@ -1,3 +1,9 @@
+//const COL_BLUE = 'cornflowerblue';
+//const COL_RED = 'lightcoral';
+// const COL_ORANGE = 'sandybrown';
+// const COL_LTGRAY = 'silver';
+const COL_DKGRAY = 'gray';
+
 export function jobTitleTransform(jobTitle: string | undefined) {
     let fixedTitle = '';
     switch (jobTitle) {
@@ -182,4 +188,16 @@ export function makePurchaseChoices(
         );
     }
     return choiceArray;
+}
+
+
+export function updateMeasureBar(bar: HTMLElement, barNum: HTMLElement, currentValue: number, maxValue: number){
+    if (!bar) {
+        return console.log('bar element not found');
+    }
+    const barWidth = bar.offsetWidth;
+    const borderWidth = Math.round((currentValue/maxValue)*barWidth);
+    bar.style.background = COL_DKGRAY;
+    bar.style.borderLeftWidth = borderWidth+'px';
+    barNum.innerText = currentValue + '/' + maxValue;
 }

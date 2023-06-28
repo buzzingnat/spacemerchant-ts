@@ -74,4 +74,5 @@ interface StoryChoice {
     text?: string[];
     isActionValid?: (playerState: PlayerState, itemType?: Cargo) => boolean;
     performAction?: (playerState: PlayerState, itemType?: Cargo) => void;
+    //getElement(platerState: PlayerState, choice: StoryChoice)
 }
