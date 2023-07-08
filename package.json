@@ -8,7 +8,8 @@
     "start": "npm-run-all -p -r webpack-watch server",
     "webpack-watch": "webpack -w --progress --node-env development",
     "server": "node server",
-    "build-production": "rm -r ./docs && cp -r ./public ./docs && cp -r ./public/fonts ./docs && cp -r ./public/gfx ./docs && cp -r ./public/styles ./docs && cp -r ./public/client.js ./docs && cp -r ./public/index.html ./docs && webpack --node-env production -o docs --progress"
+    "build-production": "rm -r ./docs && cp -r ./public ./docs && cp -r ./public/fonts ./docs && cp -r ./public/gfx ./docs && cp -r ./public/styles ./docs && cp -r ./public/client.js ./docs && cp -r ./public/index.html ./docs && webpack --node-env production -o docs --progress",
+    "build": "rm -r ./docs && cp -r ./public ./docs && cp -r ./public/fonts ./docs && cp -r ./public/gfx ./docs && cp -r ./public/styles ./docs && cp -r ./public/client.js ./docs && cp -r ./public/index.html ./docs && webpack --node-env production -o docs --progress"
   },
   "keywords": [],
   "author": "",
