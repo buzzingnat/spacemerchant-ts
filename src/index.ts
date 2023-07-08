@@ -343,7 +343,9 @@ if (typeof window !== "object") {
 }
 
 function initGame(playerState: PlayerState, scrollBoxElem: HTMLElement, firstEvent: StoryEvent) {
+    console.log('checking url...', window.location.href);
     if (window.location.href.indexOf("spacemerchant-ts") > -1) {
+        console.log('this is the live site!');
         // find iframeElem and add it to jsDom, then change iframe url
         let iframeElem: HTMLElement;
         if (jsDom.iframeWrapperElem) {
@@ -353,6 +355,7 @@ function initGame(playerState: PlayerState, scrollBoxElem: HTMLElement, firstEve
         }
         jsDom.iframeElem = iframeElem;
         jsDom.iframeElem.setAttribute('src','/spacemerchant-ts/draculajs/examples/sciFiStoryGraph.html');
+        console.log('iframe src should be updated, ', jsDom.iframeElem.getAttribute('src'));
     }
     displayEvent(
         firstEvent,
