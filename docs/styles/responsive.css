@@ -1,0 +1,102 @@
+@media screen and (min-width: 850px) {
+    .modal-open.statsBox-open {
+      display: none;
+    }
+}
+
+@media screen and (max-width: 850px) {
+  .mainGameContainer, .header, .iframeWrapper, .footer {
+    width: 95%;
+  }
+  .footer {
+    text-align: center;
+  }
+  .iframeWrapper > iframe {
+    width: 100%;
+  }
+  .js-mainGame.js-mouseContainer.mainGame {
+    box-sizing: border-box;
+    width: 90%;
+    height: 82vh;
+  }
+  .left, .center, .right {
+    float: none;
+    position: relative;
+    top: 0;
+    margin: 0;
+    overflow: auto;
+    height: 82vh;
+  }
+  .js-storyBox {
+    position: absolute;
+    overflow-y: scroll;
+    width: 95%;
+    left: 10%;
+  }
+  .storyContentWrapper, .choicesWrapper {
+    width: auto;
+    margin: 0 8px;
+  }
+  .js-controlBox {
+  }
+  .js-statsBox {
+    background: white;
+    flex: .7;
+    left: 0;
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.2s;
+    height: inherit;
+  }
+  .statsBoxInner {
+    height: 100%;
+  }
+  .js-statsBox:target {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .js-statsBox > ul {
+    width: 75%;
+    position: absolute;
+    padding: 2em;
+    background: white;
+  }
+  .modal-open.statsBox-open {
+    display: block;
+    position: absolute;
+    margin: -10px -25px;
+    width: 40px;
+    height: 40px;
+    border: thin silver solid;
+    background: white;
+    font-size: 45px;
+  }
+  .statsBox-close {
+    color: #aaa;
+    line-height: 50px;
+    font-size: 80%;
+    position: absolute;
+    right: 0;
+    text-align: center;
+    top: 0;
+    height: 50px;
+    width: 50px;
+    text-decoration: none;
+    background: transparent;
+    font-size: 45px;
+    border: thin silver solid;
+    margin: 5px 10px;
+    display: block;
+    visibility: visible;
+  }
+  .js-tabs {
+    background: #eee;
+    height: 100%;
+  }
+  .tabContent {
+    background: #fff;
+    height: calc(100% - 24px);
+  }
+}

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <style>
+    </style>
+
+    <!--<link rel="stylesheet" type="text/css" href="styles.css"/>-->
+    <!--<link href='https://fonts.googleapis.com/css?family=Bitter|Raleway' rel='stylesheet' type='text/css'>-->
+
+    <!-- font stylesheet - self hosted google fonts -->
+    <link rel="stylesheet" type="text/css" href="./styles/fonts.css"/>
+    <!-- basic stylesheet -->
+    <link rel="stylesheet" type="text/css" href="./styles/style.css"/>
+    <!-- phone stylesheet -->
+    <link rel="stylesheet" type="text/css" href="./styles/responsive.css"/>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+
+    <title>Space Merchant</title>
+</head>
+
+<body class="pagebody">
+
+    <div class="header">
+        <h1 class="gameTitle">Space Merchant</h1>
+        <span class="graphLink">
+            <button id="showGraph">Show event graph</button>
+            <button id="hideGraph">Show game</button>
+        </span>
+    </div>
+    <div class="contentWrapper">
+        <div class="mainGameContainer">
+            <div class="js-mainGame js-mouseContainer mainGame"></div>
+        </div>
+        <div class="iframeWrapper">
+            <iframe width="800" name="graphFrame" class="graphFrame" src="/draculajs/examples/sciFiStoryGraph.html"></iframe>
+        </div>
+    </div>
+    <div class="footer">
+        <h3 class="gameAuthor"><a href="www.hillarysadventure.com">H. Spratt</a>, 2023</h1>
+    </div>
+    <script src="./client.js"></script>
+
+</body>
+</html>

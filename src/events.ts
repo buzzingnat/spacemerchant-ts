@@ -478,7 +478,12 @@ export const events = [
             return `<p>${text1}</p><p>${text2}</p>`;
         },
         createChoices: function(playerState: PlayerState) {
-            if (this.choices.findIndex((c) => c.getText(playerState).includes('coins per unit.')) <= -1) {
+            if (this.choices.findIndex((c) => {
+                if (!c.getText) {
+                    return 0;
+                }
+                return c.getText(playerState).includes('coins per unit.');
+            }) <= -1) {
                 this.choices = [
                     ...makePurchaseChoices(
                         'marketHaliax',
