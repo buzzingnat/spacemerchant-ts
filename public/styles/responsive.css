@@ -11,6 +11,9 @@
   .footer {
     text-align: center;
   }
+  .iframeWrapper {
+    top: 50px;
+  }
   .iframeWrapper > iframe {
     width: 100%;
   }
