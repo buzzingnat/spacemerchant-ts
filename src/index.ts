@@ -263,7 +263,6 @@ if (typeof window !== "object") {
     const storyBoxElem: HTMLElement = tag('div', 'js-storyBox right');
     const scrollBoxElem: HTMLElement = tag('div', 'js-scrollbox');
 
-
     mainGameElem.appendChild( storyBoxElem );
     mainGameElem.appendChild( statsBoxWrapperElem );
     mainGameElem.appendChild( statsBoxOpenElem );
@@ -344,6 +343,17 @@ if (typeof window !== "object") {
 }
 
 function initGame(playerState: PlayerState, scrollBoxElem: HTMLElement, firstEvent: StoryEvent) {
+    if (window.location.href.indexOf("spacemerchant-ts") > -1) {
+        // find iframeElem and add it to jsDom, then change iframe url
+        let iframeElem: HTMLElement;
+        if (jsDom.iframeWrapperElem) {
+            iframeElem = jsDom.iframeWrapperElem.firstElementChild as HTMLElement;
+        } else {
+            jsDom.iframeElem = getIframeWrapperElem().firstElementChild as HTMLElement;
+        }
+        jsDom.iframeElem = iframeElem;
+        jsDom.iframeElem.setAttribute('src','/spacemerchant-ts/draculajs/examples/sciFiStoryGraph.html');
+    }
     displayEvent(
         firstEvent,
         playerState,
@@ -370,8 +380,12 @@ function showGraph() {
     jsDom.iframeWrapperElem.style.visibility = 'visible';
     jsDom.iframeWrapperElem.style.display = 'block';
     jsDom.iframeWrapperElem.style.height = '81vh';
-    const iframeElem = jsDom.iframeWrapperElem.firstElementChild as HTMLElement;
-    iframeElem.style.height = '100%';
+    if (jsDom.iframeElem) {
+        jsDom.iframeElem.style.height = '100%';
+    } else {
+        const iframeElem = jsDom.iframeWrapperElem.firstElementChild as HTMLElement;
+        iframeElem.style.height = '100%';
+    }
 }
 function hideGraph() {
     if (!document) {
@@ -382,8 +396,12 @@ function hideGraph() {
     jsDom.iframeWrapperElem.style.visibility = 'hidden';
     jsDom.iframeWrapperElem.style.display = 'none';
     jsDom.iframeWrapperElem.style.height = '0';
-    const iframeElem = jsDom.iframeWrapperElem.firstElementChild as HTMLElement;
-    iframeElem.style.height = '0';
+    if (jsDom.iframeElem) {
+        jsDom.iframeElem.style.height = '0';
+    } else {
+        const iframeElem = jsDom.iframeWrapperElem.firstElementChild as HTMLElement;
+        iframeElem.style.height = '0';
+    }
 }
 /* end TOGGLE EVENT GRAPH VISIBILITY */
 
