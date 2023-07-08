@@ -5,6 +5,7 @@ import {
     hasEnoughMoney,
     getItemTitle
 } from './utils';
+import { map as stations } from './map';
 
 export const events = [
     {
@@ -444,19 +445,30 @@ export const events = [
         ]
     },
     {id: 'marketExcelsior',
-        title: 'To market, to market...',
+        title: 'Excelsior: To market, to market...',
         getText: function(playerState: PlayerState){
             const text1 = 'You scroll through the market listings, looking at what is best to buy and sell here. You have a little money left to buy some goods to ship and some supplies to keep yourself and your ship functioning on your journey.';
             const text2 = 'The listings are kept in the "Map" section of your display.';
             return `<p>${text1}</p><p>${text2}</p>`;
         },
         createChoices: function(playerState: PlayerState) {
+            const station = stations.find(station => station.id === 'excelsior');
             if (this.choices.findIndex((c) => c.getText(playerState).includes('coins per unit.')) <= -1) {
                 this.choices = [
                     ...makePurchaseChoices(
-                        'marketHaliax',
-                        {food: 5, medicine: 5, luxury: 10, shipSupplies: 5},
-                        {food: 3, medicine: 4, luxury: 8, shipSupplies: 5},
+                        'marketExcelsior',
+                        {
+                            food: station.items.food.cost - 1,
+                            medicine: station.items.medicine.cost - 1,
+                            luxury: station.items.luxury.cost - 1,
+                            shipSupplies: 5
+                        },
+                        {
+                            food: station.items.food.cost,
+                            medicine: station.items.medicine.cost,
+                            luxury: station.items.luxury.cost,
+                            shipSupplies: 5
+                        },
                         makeSellChoice, makeBuyChoice, playerState, hasEnoughMoney, getItemTitle
                     ),
                     ...this.choices
@@ -471,13 +483,14 @@ export const events = [
         ]
     },
     {id: 'marketExcelsiorBeginning',
-        title: 'To market, to market...',
+        title: 'Excelsior: To market, to market...',
         getText: function(playerState: PlayerState){
             const text1 = 'You scroll through the market listings, looking at what is best to buy and sell here. You have a little money left to buy some goods to ship and some supplies to keep yourself and your ship functioning on your journey.';
             const text2 = 'The listings are kept in the "Map" section of your display.';
             return `<p>${text1}</p><p>${text2}</p>`;
         },
         createChoices: function(playerState: PlayerState) {
+            const station = stations.find(station => station.id === 'excelsior');
             if (this.choices.findIndex((c) => {
                 if (!c.getText) {
                     return 0;
@@ -486,9 +499,19 @@ export const events = [
             }) <= -1) {
                 this.choices = [
                     ...makePurchaseChoices(
-                        'marketHaliax',
-                        {food: 5, medicine: 5, luxury: 10, shipSupplies: 5},
-                        {food: 3, medicine: 4, luxury: 8, shipSupplies: 5},
+                        'marketExcelsiorBeginning',
+                        {
+                            food: station.items.food.cost - 1,
+                            medicine: station.items.medicine.cost - 1,
+                            luxury: station.items.luxury.cost - 1,
+                            shipSupplies: 5
+                        },
+                        {
+                            food: station.items.food.cost,
+                            medicine: station.items.medicine.cost,
+                            luxury: station.items.luxury.cost,
+                            shipSupplies: 5
+                        },
                         makeSellChoice, makeBuyChoice, playerState, hasEnoughMoney, getItemTitle
                     ),
                     ...this.choices
@@ -554,19 +577,30 @@ export const events = [
     },
     {
         id: 'marketHaliax',
-        title: 'To market, to market...',
+        title: 'Haliax: To market, to market...',
         getText: function(playerState: PlayerState){
             var text1 = 'You scroll through the market listings, looking at what is best to buy and sell here.';
             var text2 = 'The listings are kept in the "Map" section of your display.';
             return `<p>${text1}</p><p>${text2}</p>`;
         },
         createChoices: function(playerState: PlayerState) {
+            const station = stations.find(station => station.id === 'haliax');
             if (this.choices.findIndex((c) => c.getText(playerState).includes('coins per unit.')) <= -1) {
                 this.choices = [
                     ...makePurchaseChoices(
                         'marketHaliax',
-                        {food: 5, medicine: 5, luxury: 10, shipSupplies: 5},
-                        {food: 3, medicine: 4, luxury: 8, shipSupplies: 5},
+                        {
+                            food: station.items.food.cost - 1,
+                            medicine: station.items.medicine.cost - 1,
+                            luxury: station.items.luxury.cost - 1,
+                            shipSupplies: 5
+                        },
+                        {
+                            food: station.items.food.cost,
+                            medicine: station.items.medicine.cost,
+                            luxury: station.items.luxury.cost,
+                            shipSupplies: 5
+                        },
                         makeSellChoice, makeBuyChoice, playerState, hasEnoughMoney, getItemTitle
                     ),
                     ...this.choices
@@ -625,19 +659,30 @@ export const events = [
     },
     {
         id: 'marketEuropa',
-        title: 'To market, to market...',
+        title: 'Europa: To market, to market...',
         getText: function(playerState: PlayerState) {
             const text1 = 'You scroll through the market listings, looking at what is best to buy and sell here.';
             const text2 = 'The listings are kept in the "Map" section of your display.';
             return `<p>${text1}</p><p>${text2}</p>`;
         },
         createChoices: function(playerState: PlayerState) {
+            const station = stations.find(station => station.id === 'europa');
             if (this.choices.findIndex((c) => c.getText(playerState).includes('coins per unit.')) <= -1) {
                 this.choices = [
                     ...makePurchaseChoices(
-                        'marketHaliax',
-                        {food: 5, medicine: 5, luxury: 10, shipSupplies: 5},
-                        {food: 3, medicine: 4, luxury: 8, shipSupplies: 5},
+                        'marketEuropa',
+                        {
+                            food: station.items.food.cost - 1,
+                            medicine: station.items.medicine.cost - 1,
+                            luxury: station.items.luxury.cost - 1,
+                            shipSupplies: 5
+                        },
+                        {
+                            food: station.items.food.cost,
+                            medicine: station.items.medicine.cost,
+                            luxury: station.items.luxury.cost,
+                            shipSupplies: 5
+                        },
                         makeSellChoice, makeBuyChoice, playerState, hasEnoughMoney, getItemTitle
                     ),
                     ...this.choices
@@ -648,7 +693,7 @@ export const events = [
             {
                 next: 'arriveHaliax',
                 getText: function (playerState: PlayerState) {
-                    const text1 = 'You leave Haliax Station, heading to Haliax Station in the Echidna Prime system.';
+                    const text1 = 'You leave Europa Station, heading to Haliax Station in the Echidna Prime system.';
                     return `<p>${text1}</p>`;
                 },
                 performAction: function (p: PlayerState) {
@@ -658,7 +703,7 @@ export const events = [
             {
                 next: 'arriveDrone',
                 getText: function (playerState: PlayerState) {
-                    const text1 = 'You leave Haliax Station, heading to Drone Station in the Eldrazi Minor system.';
+                    const text1 = 'You leave Europa Station, heading to Drone Station in the Eldrazi Minor system.';
                     return `<p>${text1}</p>`;
                 },
                 performAction: function (p: PlayerState) {
@@ -687,19 +732,30 @@ export const events = [
     },
     {
         id: 'marketDrone',
-        title: 'To market, to market...',
+        title: 'Drone: To market, to market...',
         getText: function(playerState: PlayerState){
             const text1 = 'You scroll through the market listings, looking at what is best to buy and sell here.';
             const text2 = 'The listings are kept in the "Map" section of your display.';
             return `<p>${text1}</p><p>${text2}</p>`;
         },
         createChoices: function(playerState: PlayerState) {
+            const station = stations.find(station => station.id === 'drone');
             if (this.choices.findIndex((c) => c.getText(playerState).includes('coins per unit.')) <= -1) {
                 this.choices = [
                     ...makePurchaseChoices(
-                        'marketHaliax',
-                        {food: 5, medicine: 5, luxury: 10, shipSupplies: 5},
-                        {food: 3, medicine: 4, luxury: 8, shipSupplies: 5},
+                        'marketDrone',
+                        {
+                            food: station.items.food.cost - 1,
+                            medicine: station.items.medicine.cost - 1,
+                            luxury: station.items.luxury.cost - 1,
+                            shipSupplies: 5
+                        },
+                        {
+                            food: station.items.food.cost,
+                            medicine: station.items.medicine.cost,
+                            luxury: station.items.luxury.cost,
+                            shipSupplies: 5
+                        },
                         makeSellChoice, makeBuyChoice, playerState, hasEnoughMoney, getItemTitle
                     ),
                     ...this.choices
