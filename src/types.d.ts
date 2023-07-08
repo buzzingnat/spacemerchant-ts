@@ -24,7 +24,9 @@ interface MapLocation {
     description: string;
     x: number;
     y: number;
+    radius: number;
     connects: string[];
+    edges: {[key: string]: number}[];
     items: {
         food: {quantity: number; cost: number;},
         medicine: {quantity: number; cost: number;},
@@ -56,6 +58,7 @@ interface PlayerState {
     costChoice: number;
     updateUI: boolean;
     currentLocationId: MapLocation['id'];
+    targetLocationId?: MapLocation['id'] | '';
 }
 
 interface StoryEvent {
@@ -74,5 +77,4 @@ interface StoryChoice {
     text?: string[];
     isActionValid?: (playerState: PlayerState, itemType?: Cargo) => boolean;
     performAction?: (playerState: PlayerState, itemType?: Cargo) => void;
-    //getElement(platerState: PlayerState, choice: StoryChoice)
 }
